@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://buracagyang.github.io/2019/05/28/ab-test/</loc>
+    
+    <lastmod>2020-10-06T02:32:18.748Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://buracagyang.github.io/2020/01/05/graph-embedding-node2vec/</loc>
     
     <lastmod>2020-10-06T02:20:35.397Z</lastmod>
@@ -152,13 +159,6 @@
     <loc>https://buracagyang.github.io/2019/06/11/linear-algebra-1/</loc>
     
     <lastmod>2019-08-07T06:32:46.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://buracagyang.github.io/2019/05/28/ab-test/</loc>
-    
-    <lastmod>2019-08-01T07:27:44.000Z</lastmod>
     
   </url>
   
