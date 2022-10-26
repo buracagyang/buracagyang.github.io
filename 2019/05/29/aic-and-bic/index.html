@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>AIC和BIC相关知识 - Hexo</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Hexo"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Hexo"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="同步于CSDN;音尘杂记 前面在回顾sklearn时，在广义线性模型中看到选择模型时可以采用AIC和BIC准则，特地复习了下统计学基础，简记如下，以抛砖引玉。"><meta property="og:type" content="blog"><meta property="og:title" content="AIC和BIC相关知识"><meta property="og:url" content="http://example.com/2019/05/29/aic-and-bic/"><meta property="og:site_name" content="Hexo"><meta property="og:description" content="同步于CSDN;音尘杂记 前面在回顾sklearn时，在广义线性模型中看到选择模型时可以采用AIC和BIC准则，特地复习了下统计学基础，简记如下，以抛砖引玉。"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://example.com/img/og_image.png"><meta property="article:published_time" content="2019-05-29T07:14:58.000Z"><meta property="article:modified_time" content="2022-10-25T13:08:56.915Z"><meta property="article:author" content="Buracag"><meta property="article:tag" content="统计学运用"><meta property="article:tag" content="技术备忘"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2019/05/29/aic-and-bic/"},"headline":"AIC和BIC相关知识","image":["http://example.com/img/og_image.png"],"datePublished":"2019-05-29T07:14:58.000Z","dateModified":"2022-10-25T13:08:56.915Z","author":{"@type":"Person","name":"Buracag"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"http://example.com/img/logo.svg"}},"description":"同步于CSDN;音尘杂记 前面在回顾sklearn时，在广义线性模型中看到选择模型时可以采用AIC和BIC准则，特地复习了下统计学基础，简记如下，以抛砖引玉。"}</script><link rel="canonical" href="http://example.com/2019/05/29/aic-and-bic/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2019-05-29T07:14:58.000Z" title="2019/5/29 15:14:58">2019-05-29</time></span><span class="level-item">Updated&nbsp;<time dateTime="2022-10-25T13:08:56.915Z" title="2022/10/25 21:08:56">2022-10-25</time></span><span class="level-item">11 minutes read (About 1643 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">AIC和BIC相关知识</h1><div class="content"><p>同步于<a target="_blank" rel="noopener" href="https://blog.csdn.net/buracag_mc">CSDN</a>;<a target="_blank" rel="noopener" href="https://www.runblog.online/">音尘杂记</a></p>
+<p>前面在回顾<a target="_blank" rel="noopener" href="https://github.com/scikit-learn/scikit-learn">sklearn</a>时，在广义线性模型中看到选择模型时可以采用AIC和BIC准则，特地复习了下统计学基础，简记如下，以抛砖引玉。</p>
+<span id="more"></span>
+<h2 id="1-模型拟合优度检验"><a href="#1-模型拟合优度检验" class="headerlink" title="1. 模型拟合优度检验"></a>1. 模型拟合优度检验</h2><p>最基础的一个模型拟合优度的检验量就是R square(方程的确定系数)。<br>已知一组样本观测值 $(X_i, Y_i)$,其中 i=1,2,3,…,n 得到如下样本回归方程：</p>
+<script type="math/tex; mode=display">
+\hat{Y_i} = \hat{\beta_0} + \hat{\beta_1}X_i</script><p>而Y的第i个观测值与样本均值的离差 $y_i = Y_i - \bar{Y}$，其可以分解为两部分之和：</p>
+<script type="math/tex; mode=display">
+y_i = Y_i - \bar{Y} = (Y_i - \hat{Y_i}) + (\hat{Y_i} - \bar{Y}) = e_i + \hat{y_i}</script><p>其中 $\hat{y_i} = (\hat{Y_i} - \bar{Y})$是样本拟合值与观测值的平均值之差，可认为是由回归直线解释的部分，通常称之为”离差”；</p>
+<p>$e_i = (Y_i - \hat{Y_i})$是实际观测值与回归拟合值之差，是回归直线不能解释的部分，通常称之为”残差”。</p>
+<p>如果 $Y_i = \hat{Y_i}$,即实际观测值落在样本回归”线”上，则拟合最好。</p>
+<p>对于所有样本点，<strong>可以证明</strong>：</p>
+<script type="math/tex; mode=display">
+\sum{y_i}^2 = \sum{\hat{y_i}^2} + \sum{e_i^2} + 2\sum{\hat{y_i}^2e_i} = \sum{\hat{y_i}^2} + \sum{e_i^2}</script><p>记:<br>$TSS = \sum{y_i^2} = \sum{(Y_i - \bar{Y})^2}$为总体平方和(Total Sum of Squares)<br>$ESS = \sum{\hat{y_i}^2} = \sum{(\hat{Y_i} - \bar{Y})^2}$为回归平方和(Explained Sum of Squares, <strong>注意有的教材又称之为Regression Sum of Squares</strong>)<br>$RSS = \sum{e_i^2} = \sum{(Y_i - \hat{Y_i})^2}$为残差平方和(Residual Sum of Squares, <strong>注意有的教材又称之为Error Sum of Squares</strong>)</p>
+<script type="math/tex; mode=display">
+TSS = ESS + RSS</script><p>所以Y的观测值围绕其均值的总离差(total variation)可分解为两部分：一部分来自回归线(ESS)，另一部分则来自与随机误差(RSS)</p>
+<blockquote>
+<p>在给定样本中，TSS不变，如果实际观测点离样本回归线越近，则ESS在TSS中占的比重越大，因此定义<strong>拟合优度：回归平方和ESS与TSS的比值。</strong></p>
+</blockquote>
+<p>记 $R^2 = \frac{ESS}{TSS} = 1 - \frac{RSS}{TSS}$，称 $R^2$为(样本)可决系数/判定系数</p>
+<p>对于回归方程来说，$R^2$有以下几个意义：</p>
+<ol>
+<li>R square可以作为选择不同模型的标准。在拟合数据之前，不能确定数据的确定模型关系，可以对变量的不同数学形式进行拟合，再看R square的大小。</li>
+<li>在数据的关系存在非线性可能情况下：<br>a) R squared越大不一定拟合越好；<br>b) 如何一个模型的R square很小，不一定代表数据之间没有关系，而很有可能是选择的模型不对，或者存在有其他的函数关系。</li>
+<li><strong>当自变量个数增加时，尽管有的自变量与的线性关系不显著，其R square也会增大</strong>，对于这种情况需采用Adjusted R squared进行调整。</li>
+</ol>
+<h2 id="2-调整R-square"><a href="#2-调整R-square" class="headerlink" title="2. 调整R square"></a>2. 调整R square</h2><p>由于在模型中增加变量时，$R^2$没有下降，所以存在一种过度拟合模型的内在趋势，即向模型中增加变量固然可以改善数据拟合程度，但这样也会导致预测的方差正大，这时就需要用到调整 $R^2$。</p>
+<script type="math/tex; mode=display">
+\bar{R_2} = 1 - \frac{n-1}{n-k}(1-R^2)</script><p>调整$R^2$用作拟合优度的度量，它能够适当消除在模型中增加变量所导致的自由度损失。</p>
+<p>调整 $R^2$对模型扩张时自由度的损失进行了弥补，但又存在一个问题，随着样本容量的增大，这种弥补是否足以保证该准则肯定能让分析者得到正确的模型，所以提出了另外两个拟合度量指标，一个是赤池信息准则(Akaike Information Criterion, AIC)，另一个是施瓦茨或贝叶斯信息准则(Bayesian Information Criterion,BIC)。</p>
+<h2 id="3-AIC和BIC"><a href="#3-AIC和BIC" class="headerlink" title="3. AIC和BIC"></a>3. AIC和BIC</h2><script type="math/tex; mode=display">
+AIC(K) = s_y^2(1-R^2)e^{2k/n}</script><script type="math/tex; mode=display">
+BIC(K) = s_y^2(1-R^2)n^{k/n}</script><p>$s_y^2$中没有对自由度进行修正，虽然随着$R^2$的提高，这两个指标都有所改善(下降),但在其他条件不变的情况下，模型规模扩大又会使这两个指标恶化。与$\bar{R^2}$一样，实现同样的拟合程度，这些指标在平均每次观测使用参数个数(K/n)较少时更有效。使用对数通常更方便，多数统计软件报告度量指标是：</p>
+<script type="math/tex; mode=display">
+AIC(K) = ln(\frac{e^{\prime}e}{n}) + \frac{2K}{n}</script><script type="math/tex; mode=display">
+BIC(K) = ln(\frac{e^{\prime}e}{n}) + \frac{Kln{n}}{n}</script><p><u><strong>更一般地：</strong></u></p>
+<script type="math/tex; mode=display">
+AIC(K) = 2K - 2ln(L)</script><p>其中k是模型参数个数，L为似然函数。从一组可供选择的模型中选择最佳模型时，通常选择AIC最小的模型。</p>
+<p>当两个模型之间存在较大差异时，差异主要体现在似然函数项，当似然函数差异不显著时，上市第一项，即模型复杂度则起作用，从而参数个数少的模型是较好的选择。</p>
+<p>一般而言，当模型复杂度提高(k增大)时，似然函数L也会增大，从而使AIC变小，但是k过大时，似然函数增速减缓，导致AIC增大，模型过于复杂容易造成过拟合现象。目标是选取AIC最小的模型，AIC不仅要提高模型拟合度(极大似然)，而且引入了惩罚项，使模型参数尽可能少，有助于降低过拟合的可能性。</p>
+<script type="math/tex; mode=display">
+BIC(K) = Kln{n} - 2ln(L)</script><p>其中k是模型参数个数，n为样本数量，L为似然函数。与AIC类似地，引入了模型参数个数作为惩罚项，但是<strong>BIC的惩罚项比AIC的大</strong>，考虑了样本数量，样本数量过多时，可有效防止模型精度过高造成的模型复杂度过高；其中 $kln{n}$惩罚项在维度过大且训练样本数据相对较少的情况下，可以有效避免出现维度灾难现象。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>AIC和BIC相关知识</p><p><a href="http://example.com/2019/05/29/aic-and-bic/">http://example.com/2019/05/29/aic-and-bic/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>Buracag</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2019-05-29</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2022-10-25</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E8%BF%90%E7%94%A8/">统计学运用</a><a class="link-muted mr-2" rel="tag" href="/tags/%E6%8A%80%E6%9C%AF%E5%A4%87%E5%BF%98/">技术备忘</a></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2019/05/29/single-layer-perceptron/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">单层感知器为什么不能解决异或(XOR)问题</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/05/28/ab-test/"><span class="level-item">A/B-test显著性检验</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "d9c4e42ad58e27858499615e9283d0f1",
+            repo: "blog_comments",
+            owner: "buracagyang",
+            clientID: "b59e8ee91a1328df0e4b",
+            clientSecret: "e8a8251bb9bd5ec9913a699734a6824bea1d6ec3",
+            admin: "buracagyang",
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><!--!--><div class="column column-right is-4-tablet is-4-desktop is-4-widescreen  order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-模型拟合优度检验"><span class="level-left"><span class="level-item">1. 模型拟合优度检验</span></span></a></li><li><a class="level is-mobile" href="#2-调整R-square"><span class="level-left"><span class="level-item">2. 调整R square</span></span></a></li><li><a class="level is-mobile" href="#3-AIC和BIC"><span class="level-left"><span class="level-item">3. AIC和BIC</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a><p class="is-size-7"><span>&copy; 2022 Buracag</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

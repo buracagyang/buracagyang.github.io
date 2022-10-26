@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>线性代数2-矩阵 - Hexo</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Hexo"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Hexo"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="同步于CSDN;音尘杂记 线性代数2，主要回顾关于矩阵的相关知识。错误之处，还望诸君不吝指教。"><meta property="og:type" content="blog"><meta property="og:title" content="线性代数2-矩阵"><meta property="og:url" content="http://example.com/2019/06/12/linear-algebra-2/"><meta property="og:site_name" content="Hexo"><meta property="og:description" content="同步于CSDN;音尘杂记 线性代数2，主要回顾关于矩阵的相关知识。错误之处，还望诸君不吝指教。"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://example.com/img/og_image.png"><meta property="article:published_time" content="2019-06-12T06:47:09.000Z"><meta property="article:modified_time" content="2020-01-17T06:19:08.000Z"><meta property="article:author" content="Buracag"><meta property="article:tag" content="技术备忘"><meta property="article:tag" content="基础知识"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2019/06/12/linear-algebra-2/"},"headline":"线性代数2-矩阵","image":["http://example.com/img/og_image.png"],"datePublished":"2019-06-12T06:47:09.000Z","dateModified":"2020-01-17T06:19:08.000Z","author":{"@type":"Person","name":"Buracag"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"http://example.com/img/logo.svg"}},"description":"同步于CSDN;音尘杂记 线性代数2，主要回顾关于矩阵的相关知识。错误之处，还望诸君不吝指教。"}</script><link rel="canonical" href="http://example.com/2019/06/12/linear-algebra-2/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2019-06-12T06:47:09.000Z" title="2019/6/12 14:47:09">2019-06-12</time></span><span class="level-item">Updated&nbsp;<time dateTime="2020-01-17T06:19:08.000Z" title="2020/1/17 14:19:08">2020-01-17</time></span><span class="level-item">15 minutes read (About 2191 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">线性代数2-矩阵</h1><div class="content"><p>同步于<a target="_blank" rel="noopener" href="https://blog.csdn.net/buracag_mc">CSDN</a>;<a target="_blank" rel="noopener" href="https://www.runblog.online/">音尘杂记</a></p>
+<p>线性代数2，主要回顾关于矩阵的相关知识。错误之处，还望诸君不吝指教。</p>
+<span id="more"></span>
+<h1 id="1-线性映射"><a href="#1-线性映射" class="headerlink" title="1. 线性映射"></a>1. 线性映射</h1><p><strong>线性映射（Linear Mapping）</strong>是指从线性空间V 到线性空间W的一个映射函数$f : V \to W$，并满足：对于$V$中任何两个向量$u$和$v$以及任何标量$c$，有</p>
+<script type="math/tex; mode=display">
+\begin{eqnarray}
+f(u+v) &=& f(u) + f(v), \tag{1.1} \\
+f(cv) &=& cf(v). \tag{1.2}
+\end{eqnarray}</script><p>两个有限维欧式空间的映射函数$f: \mathbb{R}^n \to \mathbb{R}^m$可以表示为</p>
+<script type="math/tex; mode=display">
+y = Ax \triangleq
+\begin {bmatrix}
+a_{11}x_1 + a_{12}x_2 + ... + a_{1n}x_n \\
+a_{21}x_1 + a_{22}x_2 + ... + a_{2n}x_n \\
+\vdots \\
+a_{m1}x_1 + a_{m2}x_2 + ... + a_{mn}x_n \\
+\end {bmatrix}, \tag{1.3}</script><p>其中$A$定义为$m × n$的<strong>矩阵（Matrix）</strong>，是一个由$m$行$n$列元素排列成的矩形阵列。一个矩阵A从左上角数起的第$i$行第$j$列上的元素称为第$i, j$项，通常记为$[A]_{ij}或 a _{ij}$。矩阵$A$定义了一个从$\mathbb{R}^n$ 到 $\mathbb{R}^m$ 的线性映射；向量 $x \in \mathbb{R}^n$ 和 $y \in \mathbb{R}^m$ 分别为两个空间中的<strong>列向量</strong>，即大小分别为$n \times 1$和$m \times 1$的矩阵。</p>
+<script type="math/tex; mode=display">
+x =\begin {bmatrix}
+x_1 \\
+x_2 \\
+\vdots \\
+x_n \\
+\end {bmatrix}, y = \begin {bmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_m \\
+\end {bmatrix}, \tag{1.4}</script><p>一般为方便起见，书籍中约定逗号隔离的向量表示$[x_1, x_2, … , x_n]$为行向量，列向量通常用分号隔开的表示$x =  [x_1; x_2; … ; x_n]$，或行向量的转置$[x_1, x_2, … , x_n]^T$。</p>
+<h1 id="2-矩阵操作"><a href="#2-矩阵操作" class="headerlink" title="2. 矩阵操作"></a>2. 矩阵操作</h1><p><strong>加</strong> 如果$A$和$B$都为$m×n$的矩阵，则$A$和$B$的加也是$m×n$的矩阵，其每个元素是$A$和$B$相应元素相加。</p>
+<script type="math/tex; mode=display">
+[A + B]_{ij} = a_{ij} + b_{ij} \tag{1.5}</script><p><strong>乘积</strong> 假设有两个$A$和$B$分别表示两个线性映射$g : \mathbb{R}^m \to \mathbb{R}^k$ 和 $f: \mathbb{R}^n \to \mathbb{R}^m，则其复合线性映射为：</p>
+<script type="math/tex; mode=display">
+(g \circ f)(x) = g(f(x)) = g(Bx) = A(Bx) = (AB)x, \tag{1.6}</script><p>其中$AB$表示矩阵$A$和$B$的乘积，定义为</p>
+<script type="math/tex; mode=display">
+[AB]_{ij} = \sum_{k=1}^na_{ik}b_{kj} \tag{1.7}</script><p>两个矩阵的乘积仅当第一个矩阵的列数和第二个矩阵的行数相等时才能定义。如$A$是$k × m$矩阵和$B$是$m × n$矩阵，则乘积$AB$是一个$k × n$的矩阵。矩阵的乘法也满足结合律和分配律：</p>
+<ul>
+<li><p>结合律： $(AB)C = A(BC)$,</p>
+</li>
+<li><p>分配律： $(A + B)C = AC + BC，C(A + B) = CA + CB$.</p>
+</li>
+</ul>
+<p><strong>Hadamard 积</strong> $A$和$B$的<em>Hadamard</em>积，也称为<em>逐点乘积</em>，为$A$和$B$中对应的元素相乘。</p>
+<script type="math/tex; mode=display">
+[A \odot B]_{ij} = a_{ij}b_{ij} \tag{1.8}</script><p>一个标量$c$与矩阵$A$乘积为$A$的每个元素是$A$的相应元素与$c$的乘积</p>
+<script type="math/tex; mode=display">
+[cA]_{ij} = ca_{ij} \tag{1.9}</script><p><strong>转置</strong> $m×n$矩阵$A$的<strong>转置（Transposition）</strong>是一个$n×m$的矩阵，记为$A^T$，$A^T$的第$i$行第$j$列的元素是原矩阵A的第$j$行第$i$列的元素</p>
+<script type="math/tex; mode=display">
+[A^T]_{ij} = [A]_{ji} \tag{1.10}</script><p><strong>向量化</strong> 矩阵的向量化是将矩阵表示为一个列向量。这里，<strong>vec</strong>是向量化算子。设$A = [a_{ij}]_{m×n}$，则</p>
+<script type="math/tex; mode=display">
+vec(A) = [a_{11}, a_{21}, ... , a_{m1}, a_{12}, a_{22}, ... , a_{m2}, ... , a_{1n}, a_{2n}, ... , a_{mn}]^T \tag{1.11}</script><p><strong>迹</strong> $n$ x $n$矩阵$A$的对角线元素之和称为它的<strong>迹（Trace）</strong>，记为tr(A)。尽管矩阵的乘法不满足交换律，但它们的迹相同，即tr(AB) = tr(BA)。</p>
+<p><strong>行列式</strong> $n$ x $n$矩阵$A$的行列式是一个将其映射到标量的函数，通常记作$det(A)$或$|A|$。行列式可以看做是有向面积或体积的概念在欧氏空间中的推广。在$n$维欧氏空间中，行列式描述的是一个线性变换对“体积”所造成的影响。一个$n × n$的矩阵$A$的行列式定义为：</p>
+<script type="math/tex; mode=display">
+det(A) = \sum_{\sigma \in S_n}(-1)^k\prod a_i,\sigma(i) \tag{1.12}</script><p>解释一下，$S_n$是$\{1,2,…,n\}$的所有排列的集合，$\sigma$是其中一个排列，$\sigma(i)$是元素i在排列$\sigma$中的位置，k表示$\sigma$中的逆序对的数量。</p>
+<p>其中逆序对的定义为：在排列$\sigma$中，如果有序数对$(i, j)$满足$1 \leq i &lt; j \leq n$但$\sigma(i) &gt; \sigma(j)$，则其为$\sigma$的一个逆序对。举个例子(左侧为排列， 右侧为逆序对数量)：</p>
+<script type="math/tex; mode=display">
+eg：[4, 3, 1, 2, 5] \to 5</script><p><strong>秩</strong> 一个矩阵$A$的列秩是$A$的线性无关的列向量数量，行秩是$A$的线性无关的行向量数量。一个矩阵的列秩和行秩总是相等的，简称为<strong>秩（Rank）</strong>。</p>
+<p>一个$m × n$的矩阵$A$的秩最大为$min(m, n)$。若$rank(A) = min(m, n)$，则称矩阵为满秩的。如果一个矩阵不满秩，说明其包含线性相关的列向量或行向量，其行列式为0。两个矩阵的乘积$AB$的秩$rank(AB) \leq min(rank(A), rank(B))$。</p>
+<p><strong>范数</strong> 在“线性代数1-向量和向量空间”中已经提及</p>
+<script type="math/tex; mode=display">
+\ell_p(v) = \parallel v \parallel_p = {(\sum_{i=1}^{n}|v_i|^p)}^{1/p}, \tag{1.13}</script><h1 id="3-矩阵类型"><a href="#3-矩阵类型" class="headerlink" title="3. 矩阵类型"></a>3. 矩阵类型</h1><p><strong>对称矩阵</strong> 对称矩阵（Symmetric Matrix）指其转置等于自己的矩阵，即满足$A = A^T$。</p>
+<p><strong>对角矩阵</strong> 对角矩阵（Diagonal Matrix）是一个主对角线之外的元素皆为0 的矩阵。对角线上的元素可以为0 或其他值。一个$n × n$的对角矩阵$A$满足</p>
+<script type="math/tex; mode=display">
+[A]_{ij} = 0 \qquad if \quad i\neq j \quad \forall i,j \in \{1, ..., n\} \tag{1.14}</script><p>对角矩阵A也可以记为diag(a)，a 为一个n维向量，并满足</p>
+<script type="math/tex; mode=display">
+[A]_{ii} = a_i \tag{1.15}</script><p>其中$n × n$的对角矩阵$A = diag(a)$和$n$维向量b的乘积为一个$n$维向量</p>
+<script type="math/tex; mode=display">
+Ab = diag(a)b = a \odot b \tag{1.16}</script><p>其中$\odot$表示点乘，即$(a \odot b)_i = a_ib_i$。</p>
+<p><strong>单位矩阵</strong> 单位矩阵（Identity Matrix）是一种特殊的的对角矩阵，其主对角线元素为1，其余元素为0。$n$阶单位矩阵$I_n$，是一个$n × n$的方块矩阵。可以记为$I_n = diag(1, 1, …, 1)$。一个m × n的矩阵A和单位矩阵的乘积等于其本身。</p>
+<script type="math/tex; mode=display">
+AI_n = I_mA = A \tag{1.17}</script><p><strong>逆矩阵</strong> 对于一个$n × n$的方块矩阵$A$，如果存在另一个方块矩阵$B$使得</p>
+<script type="math/tex; mode=display">
+AB = BA = I_n \tag{1.18}</script><p>其中$I_n$为单位阵，则称$A$是可逆的。矩阵$B$称为矩阵A的逆矩阵（Inverse Matrix），记为$A^{−1}$。</p>
+<blockquote>
+<p>一个方阵的行列式等于0当且仅当该方阵不可逆时。</p>
+</blockquote>
+<p><strong>正定矩阵</strong> 对于一个$n×n$的对称矩阵$A$，如果对于所有的非零向量$x \in \mathbb{R}^n$都满足</p>
+<script type="math/tex; mode=display">
+x^TAx > 0 \tag{1.19}</script><p>则$A$为<strong>正定矩阵（Positive-Definite Matrix）</strong>。如果$x^TAx \geq 0$，则$A$是<strong>半正定矩阵（Positive-Semidefinite Matrix）</strong>。</p>
+<p><strong>正交矩阵</strong> 正交矩阵（Orthogonal Matrix）$A$为一个方块矩阵，其逆矩阵等于其转置矩阵。</p>
+<script type="math/tex; mode=display">
+A^T = A^{-1} \tag{1.20}</script><p>等价于$A^TA = AA^T = I_n$。</p>
+<p><strong>Gram矩阵</strong> 向量空间中一组向量$v_1, v_2 , … , v_n$的Gram 矩阵（Gram Matrix）;G是内积的对称矩阵，其元素$G_{ij}$为${v_i}^T v_j$。</p>
+<h1 id="4-特征值与特征矢量"><a href="#4-特征值与特征矢量" class="headerlink" title="4. 特征值与特征矢量"></a>4. 特征值与特征矢量</h1><p>如果一个标量$\lambda$和一个非零向量v满足</p>
+<script type="math/tex; mode=display">
+Av = \lambda v \tag{1.21}</script><p>则$\lambda$和$v$分别称为矩阵$A$的<strong>特征值（Eigenvalue）</strong>和<strong>特征向量（Eigenvector）</strong>。</p>
+<h1 id="5-矩阵分解"><a href="#5-矩阵分解" class="headerlink" title="5. 矩阵分解"></a>5. 矩阵分解</h1><p>一个矩阵通常可以用一些比较“简单”的矩阵来表示，称为<strong>矩阵分解（Matrix Decomposition, Matrix Factorization）</strong>。</p>
+<p><strong>奇异值分解</strong> 一个$m×n$的矩阵$A$的奇异值分解（Singular Value Decomposition，SVD）定义为</p>
+<script type="math/tex; mode=display">
+A = U\sum V^T \tag{1.22}</script><p>其中$U$和$V$分别为$m × m$和$n × n$的正交矩阵，$\sum$为$m × n$的对角矩阵，其对角线上的元素称为奇异值（Singular Value）。</p>
+<p><strong>特征分解</strong> 一个$n × n$的方块矩阵$A$的特征分解（Eigendecomposition）定义为</p>
+<script type="math/tex; mode=display">
+A = Q\Lambda Q^{-1} \tag{1.23}</script><p>其中$Q$为$n×n$的方块矩阵，其每一列都为$A$的特征向量，Λ为对角阵，其每一个对角元素为$A$的特征值。<br>如果$A$为对称矩阵，则A可以被分解为</p>
+<script type="math/tex; mode=display">
+A = Q\Lambda Q^T \tag{1.24}</script><p>其中Q为正交阵。</p>
+<p>主要参考 <a target="_blank" rel="noopener" href="https://github.com/nndl/nndl.github.io">https://github.com/nndl/nndl.github.io</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>线性代数2-矩阵</p><p><a href="http://example.com/2019/06/12/linear-algebra-2/">http://example.com/2019/06/12/linear-algebra-2/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>Buracag</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2019-06-12</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-01-17</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E6%8A%80%E6%9C%AF%E5%A4%87%E5%BF%98/">技术备忘</a><a class="link-muted mr-2" rel="tag" href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">基础知识</a></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2019/06/12/calculus-1/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">微积分1-导数</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/06/11/linear-algebra-1/"><span class="level-item">线性代数1-向量和向量空间</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "e5b337b9173af44d05faaf95fb33ca16",
+            repo: "blog_comments",
+            owner: "buracagyang",
+            clientID: "b59e8ee91a1328df0e4b",
+            clientSecret: "e8a8251bb9bd5ec9913a699734a6824bea1d6ec3",
+            admin: "buracagyang",
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><!--!--><div class="column column-right is-4-tablet is-4-desktop is-4-widescreen  order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-线性映射"><span class="level-left"><span class="level-item">1. 线性映射</span></span></a></li><li><a class="level is-mobile" href="#2-矩阵操作"><span class="level-left"><span class="level-item">2. 矩阵操作</span></span></a></li><li><a class="level is-mobile" href="#3-矩阵类型"><span class="level-left"><span class="level-item">3. 矩阵类型</span></span></a></li><li><a class="level is-mobile" href="#4-特征值与特征矢量"><span class="level-left"><span class="level-item">4. 特征值与特征矢量</span></span></a></li><li><a class="level is-mobile" href="#5-矩阵分解"><span class="level-left"><span class="level-item">5. 矩阵分解</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a><p class="is-size-7"><span>&copy; 2022 Buracag</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

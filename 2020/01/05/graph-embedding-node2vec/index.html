@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>【Graph Embedding】node2vec - Hexo</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Hexo"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Hexo"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="关于Graph Embedding系列的论文翻译解读文章： 【Graph Embedding】DeepWalk 【Graph Embedding】line 【Graph Embedding】node2Vec 【Graph Embedding】SDNE 【Graph Embedding】struc2vec 参考资料 paper: https:&amp;#x2F;&amp;#x2F;www.kdd.org&amp;#x2F;kdd2016&amp;#x2F;papers&amp;#x2F;"><meta property="og:type" content="blog"><meta property="og:title" content="【Graph Embedding】node2vec"><meta property="og:url" content="http://example.com/2020/01/05/graph-embedding-node2vec/"><meta property="og:site_name" content="Hexo"><meta property="og:description" content="关于Graph Embedding系列的论文翻译解读文章： 【Graph Embedding】DeepWalk 【Graph Embedding】line 【Graph Embedding】node2Vec 【Graph Embedding】SDNE 【Graph Embedding】struc2vec 参考资料 paper: https:&amp;#x2F;&amp;#x2F;www.kdd.org&amp;#x2F;kdd2016&amp;#x2F;papers&amp;#x2F;"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/figure1.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/figure2.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/alg1.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/table1.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/figure3.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/table2.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/figure4.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/figure5.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/table3.png"><meta property="og:image" content="http://example.com/2020/01/05/graph-embedding-node2vec/table4.png"><meta property="article:published_time" content="2020-01-05T11:36:25.000Z"><meta property="article:modified_time" content="2020-10-06T02:20:35.397Z"><meta property="article:author" content="Buracag"><meta property="article:tag" content="算法备忘"><meta property="article:tag" content="图计算"><meta property="article:tag" content="Embedding"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2020/01/05/graph-embedding-node2vec/figure1.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2020/01/05/graph-embedding-node2vec/"},"headline":"【Graph Embedding】node2vec","image":["http://example.com/2020/01/05/graph-embedding-node2vec/figure1.png","http://example.com/2020/01/05/graph-embedding-node2vec/figure2.png","http://example.com/2020/01/05/graph-embedding-node2vec/alg1.png","http://example.com/2020/01/05/graph-embedding-node2vec/table1.png","http://example.com/2020/01/05/graph-embedding-node2vec/figure3.png","http://example.com/2020/01/05/graph-embedding-node2vec/table2.png","http://example.com/2020/01/05/graph-embedding-node2vec/figure4.png","http://example.com/2020/01/05/graph-embedding-node2vec/figure5.png","http://example.com/2020/01/05/graph-embedding-node2vec/table3.png","http://example.com/2020/01/05/graph-embedding-node2vec/table4.png"],"datePublished":"2020-01-05T11:36:25.000Z","dateModified":"2020-10-06T02:20:35.397Z","author":{"@type":"Person","name":"Buracag"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"http://example.com/img/logo.svg"}},"description":"关于Graph Embedding系列的论文翻译解读文章： 【Graph Embedding】DeepWalk 【Graph Embedding】line 【Graph Embedding】node2Vec 【Graph Embedding】SDNE 【Graph Embedding】struc2vec 参考资料 paper: https:&#x2F;&#x2F;www.kdd.org&#x2F;kdd2016&#x2F;papers&#x2F;"}</script><link rel="canonical" href="http://example.com/2020/01/05/graph-embedding-node2vec/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2020-01-05T11:36:25.000Z" title="2020/1/5 19:36:25">2020-01-05</time></span><span class="level-item">Updated&nbsp;<time dateTime="2020-10-06T02:20:35.397Z" title="2020/10/6 10:20:35">2020-10-06</time></span><span class="level-item">an hour read (About 10315 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">【Graph Embedding】node2vec</h1><div class="content"><p>关于Graph Embedding系列的论文翻译解读文章：</p>
+<p><a target="_blank" rel="noopener" href="https://buracagyang.github.io/2019/12/26/graph-embedding-deepwalk/">【Graph Embedding】DeepWalk</a></p>
+<p><a target="_blank" rel="noopener" href="https://buracagyang.github.io/2019/12/21/graph-embedding-line/">【Graph Embedding】line</a></p>
+<p><a target="_blank" rel="noopener" href="https://buracagyang.github.io/2019/12/26/graph-embedding-node2vec/">【Graph Embedding】node2Vec</a></p>
+<p><a target="_blank" rel="noopener" href="https://buracagyang.github.io/2020/01/14/graph-embedding-SDNE/">【Graph Embedding】SDNE</a></p>
+<p><a target="_blank" rel="noopener" href="https://buracagyang.github.io/2020/01/13/graph-embedding-struc2vec/">【Graph Embedding】struc2vec</a></p>
+<p><strong>参考资料</strong></p>
+<p>paper: <a target="_blank" rel="noopener" href="https://www.kdd.org/kdd2016/papers/files/rfp0218-groverA.pdf">https://www.kdd.org/kdd2016/papers/files/rfp0218-groverA.pdf</a></p>
+<p>code: <a target="_blank" rel="noopener" href="https://github.com/aditya-grover/node2vec">https://github.com/aditya-grover/node2vec</a></p>
+<span id="more"></span>
+<h1 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h1><p>参考DeepWalk和LINE，node2vec定义了一个灵活的节点邻域的概念，并设计了一个有偏差的随机游走过程，可以看做是DeepWalk的扩展，其结合了DFS和BFS的随机游走。</p>
+<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h1><p>网络分析中的许多重要任务都涉及对节点和边缘的预测。例如，</p>
+<ul>
+<li>在社交网络中，我们可能对预测用户的兴趣感兴趣，或者在蛋白-蛋白交互网络中，我们可能对预测蛋白质的功能标签感兴趣[25,37]。</li>
+<li>同样，在链路预测中，我们希望预测网络中的一对节点是否应该有一条连接它们的边[18]。链路预测在很多领域都很有用。在基因组学中，它帮助我们发现基因之间的新相互作用；在社会网络中，它可以识别现实世界中二人是否是朋友[2,34]。</li>
+</ul>
+<p>任何监督机器学习算法都需要一组信息丰富的、有区别的和独立的特征。在网络预测问题中，这意味着必须为节点和边构造一个特征向量表示。典型的解决方案包括基于domain knowledge和手动的特征工程。即使不考虑特征工程所需的繁琐工作，这些特征通常是针对特定任务设计的，不会泛化到不同的预测任务中。</p>
+<p>另一种方法是通过解决优化问题[4]来学习特征表示。特征学习的挑战是定义一个目标函数，它涉及计算效率和预测精度之间的平衡。虽然这种监督过程有较高的准确性，但其代价是由于需要估计的参数数量激增，导致训练时间复杂性很高。</p>
+<p>然而，目前的技术并不能令人满意地定义和优化网络中可伸缩的无监督特征学习所需的合理目标。经典方法基于线性和非线性降维技术，如主成分分析、多维扩展[3, 27, 30, 35]使数据表示的方差最大化。因此，这些方法总是涉及到适当的数据矩阵的特征分解，这对于大型的真实网络是昂贵的。此外，由此产生的潜在表示在网络上的各种预测任务中表现较差。</p>
+<p>或者，我们可以设计一个目标来保护节点的局部邻域。利用类似于单隐层前馈神经网络反向传播的随机梯度下降法可以有效地优化目标。最近在这方面的尝试[24,28]提出了有效的算法，但依赖于网络邻域的严格概念，这导致这些方法在很大程度上对网络特有的连接模式不敏感。特别是网络中的节点可以根据他们所属的社区来组织（同质性)。例如，在图1中，我们观察到节点$u$和$s_1$属于同一个紧密结合的节点社区，而两个不同的社区中的节点$u$和$s_6$共享一个hub节点的相同结构角色。现实世界的网络通常表现出这种等价的混合。因此,它是必要的,以便灵活的算法,可以学习节点表示遵守两个原则: 能够紧密地学习来自同一网络社区的嵌入节点的表示,以及学习共享相似角色的节点具有相似的embeddings。这将允许特征学习算法泛化各种领域和预测任务</p>
+<p><strong>现在的工作</strong>。提出了一种用于网络中可伸缩特征学习的半监督算法node2vec。在自然语言处理[21]的基础上，我们使用SGD优化了一个自定义的基于图的目标函数。直观地说，我们的方法返回的特征表示能够最大限度地在d维特征空间中保留节点的网络邻域。我们使用二阶随机游走的方法来生成(样本)节点的网络邻域。</p>
+<p>我们的主要贡献在于定义了一个灵活的节点网络邻居概念。通过选择适当的邻域概念，node2vec可以学习基于节点的网络角色和/或它们所属的社区组织节点的表示形式。我们通过开发一组有偏随机游走来实现这一点，它有效地探索了给定节点的不同邻域。得到的算法是灵活的，通过可调参数控制搜索空间，这与之前工作中严格的搜索过程形成对比[24,28]。因此，我们的方法可以推广先前的工作，并且可以对网络中观察到的全谱等价进行建模。控制我们的搜索策略的参数有一个直观的解释，并倾向于不同的网络探索策略。这些参数也可以通过使用一小部分标记数据以半监督的方式直接学习。</p>
+<p>我们还展示了如何将单个节点的特性表示扩展到成对的节点(边)。为了生成边的特征表示，我们使用简单的二元操作符来组合单个节点的学习特征表示。这种组合性使node2vec可以用于涉及节点和边的预测任务</p>
+<p>实验集中在两个网络中常见的预测任务上:一个是多标签分类任务，其中每个节点被分配一个或多个类标签;另一个是链路预测任务，其中我们预测给定一对节点的边的存在。我们将node2vec的性能与最先进的特征学习算法进行了对比[24,28]。我们实验了几个来自不同领域的真实世界的网络，如社交网络、信息网络，以及系统生物学的网络。实验表明，node2vec在多标签分类和链路预测方面的性能比最先进的方法分别高出26.7%和12.6%。即使是10%的标记数据，该算法也有很好的表现，并且对噪声或缺失边形式的扰动上具有很强的鲁棒性。在计算上，node2vec的主要阶段是可并行的，它可以在几个小时内扩展到具有数百万节点的大型网络。</p>
+<p>node2vec的贡献如下：</p>
+<ol>
+<li>node2vec是一种高效的可扩展的网络特征学习算法，它利用SGD有效地优化了一个新的网络感知、邻域保持的目标。</li>
+<li>展示了node2vec如何符合网络科学中已建立的原则，灵活地提供不同等价的表示。</li>
+<li>扩展了node2vec和其他基于邻域保留目标的特征学习方法，从节点扩展到基于边的预测任务。</li>
+<li>对node2vec在多个真实数据集上的多标签分类和链路预测进行了经验评估。</li>
+</ol>
+<h1 id="2-相关工作"><a href="#2-相关工作" class="headerlink" title="2. 相关工作"></a>2. 相关工作</h1><p>特征工程已经被机器学习社区在不同的标题下进行了广泛的研究。在网络中，为节点生成特征的传统范式是基于特征提取技术的，该技术通常涉及一些基于网络属性的人工设计的种子特征[8,11]。相反，我们的目标是通过将特征提取转换为表示学习问题来自动化整个过程，在这种情况下，我们不需要任何人工设计的特征。</p>
+<p>无监督特征学习方法通常利用图的各种矩阵表示的谱特性，特别是<strong>拉普拉斯矩阵</strong>和<strong>邻接矩阵</strong>。从线性代数的角度来看，这些方法可以看作是降维技术。一些线性的(如主成分分析)和非线性的(例如，IsoMap)降维技术已经被提出[3, 27, 30, 35]。这些方法在计算和统计性能上都存在缺陷。在计算效率方面，矩阵的特征分解是昂贵的，除非解决方案的质量在很大程度上受到近似的影响，因此，这些方法很难扩展到大型网络。其次，这些方法针对网络中观察到的不同模式(如同质性和结构等价性)不具有鲁棒性的目标进行优化，并对底层网络结构与预测任务之间的关系进行假设。例如，光谱聚类做了一个强有力的同质性假设，即图割将有助于分类[29]。这样的假设在许多情况下都是合理的，但在有效地将其推广到不同的网络上时却不能令人满意。</p>
+<p>自然语言处理的表征性学习的最新进展为离散对象(如单词)的特征学习开辟了新途径。特别是，Skip-Gram模型[21]旨在通过优化邻域保留似然目标来学习单词的连续特征表示。算法如下：它扫描文档中的单词，并将每个单词嵌入文档中，这样单词的特征就可以预测附近的单词(例如:，一些上下文窗口中的单词)。特征表示是通过负抽样[22]的SGD似然目标来学习的。跳跃图的目标是基于分布假设，即在相似的上下文中，单词往往具有相似的含义。也就是说，相似的单词往往出现在相似的词域中。</p>
+<p>受Skip-Gram模型的启发，最近的研究通过将网络表示为“文档”，为网络建立了一个类比(24、28)。就像文档是一个有序的单词序列一样，我们可以从底层网络中采样节点序列，并将网络转换为有序的节点序列。然而，有许多可能的节点抽样策略，导致不同的学习特征表示。事实上，正如我们将要展示的，没有一个清晰的抽样策略可以适用于所有的网络和所有的预测任务。这是以前工作的一个主要缺点，不能提供任何灵活的抽样节点从网络[24,28]。我们的算法<code>node2vec</code>克服了这一限制，它设计了一个灵活的目标，不依赖于特定的采样策略，并提供参数来调整搜索空间(参见第3节)。</p>
+<p>最后，对于基于节点和边缘的预测任务，有大量基于现有的和新的特定于图的深度网络架构的监督特征学习的最新工作[15,16,17,31,39]。这些体系结构使用多层非线性转换直接最小化下游预测任务的损失函数，从而获得较高的准确性，但由于需要较高的训练时间，因此以可扩展为损失。</p>
+<h1 id="3-特征学习框架"><a href="#3-特征学习框架" class="headerlink" title="3. 特征学习框架"></a>3. 特征学习框架</h1><p>我们将网络中的特征学习描述为一个极大似然优化问题。设$G = (V, E)$是一个给定的网络。我们的分析是一般性的，适用于任何定向/非定向的加权/非加权网络。设$f: V \to \Bbb{R}^d$是从节点到特征表征物的映射函数，我们的目标是学习下游预测任务。这里$d$是一个参数，指定特征表示的维数。同样，$f$是一个参数大小为$|V| \times d$的矩阵。对于每个节点$u \in V$， 我们定义$N_{S}(u)  \subset V$ 作为通过邻域采样策略$S$生成节点$u$的网络邻域</p>
+<p>我们将Skip-gram结构扩展到网络[21,24]。我们试图优化以下目标函数，使观察网络邻域的似然概率最大化:</p>
+<script type="math/tex; mode=display">
+\max_{f} \, \, \, \, \, \, \, \sum_{u \in V}logPr(N_S(u) | f(u)). \tag{1}</script><p>为了使优化问题易于处理，我们做了两个标准假设:</p>
+<ul>
+<li><p>条件独立性假设。给定源顶点，邻域节点出现的概率相互独立:</p>
+<script type="math/tex; mode=display">
+Pr(N_S(u) | f(u)) = \prod_{n_i \in N_S(u)}Pr(n_i|f(u)).</script></li>
+<li><p>特征空间对称性假设。在特征空间中，源节点与邻节点之间存在对称效应。也就是说作为源节点和作为邻节点时候共享同样的embedding向量(回想<a target="_blank" rel="noopener" href="https://buracagyang.github.io/2019/12/21/graph-embedding-line/">LINE</a>中4.1.2中定义的二阶相似度，一个顶点作为源节点和邻节点时是用不同的embedding向量表示)因此，node2vec将每个源邻节点对的条件似然建模为一个softmax单元，并由它们的特征点积进行参数化:</p>
+<script type="math/tex; mode=display">
+Pr(n_i|f(u)) =  \frac{exp(f(n_i).f(u))} {\sum_{v \in V}exp(f(v).f(u))}.</script></li>
+</ul>
+<p>根据上述假设，式(1)中的目标简化为:</p>
+<script type="math/tex; mode=display">
+\max_{f} \, \, \, \, \, \, \, \sum_{u \in V}[-log Z_u + \sum_{n_i \in N_{S}(u)}f(n_i).f(u)]. \tag{2}</script><p>每个节点的分配函数，$Z_u = \sum_{v \in V}exp(f(u).f(v))$的对于大型网络计算是很昂贵的，所以使用负采样[22]来近似它。我们使用定义特征的模型参数$f$上的随机梯度上升来优化等式（2）。</p>
+<p>基于Skip-gram结构的特征学习方法最初是在自然语言[21]环境下发展起来的。考虑到文本的线性特性，邻域的概念可以通过在连续的单词上使用滑动窗口来自然地定义。然而，网络不是线性的，因此需要一个更丰富的邻域概念。为了解决这个问题，我们提出了一个随机过程，对给定源节点$u$的许多不同的邻域进行采样。<strong>邻域$N_S(u)$不仅限于相邻的邻域，而且根据采样策略$S$可以有非常不同的结构。</strong></p>
+<h2 id="3-1-经典搜索策略"><a href="#3-1-经典搜索策略" class="headerlink" title="3.1 经典搜索策略"></a>3.1 经典搜索策略</h2><p><img src="/2020/01/05/graph-embedding-node2vec/figure1.png" alt="这里写图片描述"></p>
+<p>如图1，对单个节点$u$进行3个节点的采样。一般来说，生成$k$个节点的邻域集$N_S$有两种极端的采样策略:</p>
+<ul>
+<li><strong>宽度优先抽样(BFS)</strong> 如，对于大小为$k = 3$的邻域，BFS示例节点$s1、s2、s3$。</li>
+<li><strong>广度优先抽样(DFS)</strong> DFS对$s4、s5、s6$进行了采样。</li>
+</ul>
+<p>广度优先和深度优先的抽样代表了他们所探索的搜索空间的极端情况，这对学习表征产生了有趣的影响。特别是，网络节点上的预测任务往往在两类相似性之间穿梭:同质性和结构等价性[12]。根据<strong>同质性假设</strong>[7,36]，高度互联且属于相似网络集群或社区的节点应紧密嵌入在一起(如图1中的节点$s_1$和$u$属于同一网络社区)。相反，在<strong>结构等价</strong>假设下，在网络中具有相似结构角色的[10]节点应该紧密嵌入在一起(如图1中的节点$u$和$s_6$作为其对应社区的枢纽)。重要的是，与同质性不同，结构等价并不强调连接性;节点可能在网络中相隔很远，但仍然具有相同的结构角色。在现实世界中，这些等价概念并不是排他的;网络通常表现出这两种行为，一些节点表现出同质性，而另一些则表现出结构等价性。</p>
+<p>我们观察到，BFS和DFS策略在生成反映上述任一等价的表示方面起着关键作用。特别是，BFS采样的邻域导致了与结构等价性紧密对应的嵌入。直观地说，我们注意到，为了确定结构上的等价性，通常只需要准确地描述局部邻域就足够了。例如，基于网络角色(如桥接器和集线器)的结构等价性可以通过观察每个节点的直接邻域来推断。通过限制搜索到附近的节点，BFS实现了这种特性，并获得了每个节点邻居的微观视图。此外，在BFS中，采样的邻近节点往往重复许多次。这一点也很重要，因为它减少了描述1跳节点相对于源节点分布的方差。然而，对于任意给定的$k$，图中只有很小一部分被探索。</p>
+<p>相反，DFS可以探索更大的网络部分，因为它可以远离源节点u(样本容量$k$固定)。在DFS中，采样的节点更准确地反映了邻居的宏观视图，这在基于同质性的社区推断中是必不可少的。然而，DFS的问题是，不仅要推断网络中存在哪些节点到节点的依赖关系，而且还要确定这些依赖关系的确切性质。这是困难的，因为我们有一个约束的样本大小和一个大的邻居去探索，导致高方差。其次，移动到更大的深度会导致复杂的依赖关系，因为采样的节点可能离源很远，而且可能不太具有代表性。</p>
+<h2 id="3-2-node2vec"><a href="#3-2-node2vec" class="headerlink" title="3.2 node2vec"></a>3.2 node2vec</h2><p>在此基础上，我们设计了一个灵活的邻域采样策略，使我们能够在BFS和DFS之间进行平滑插值。我们通过开发一种灵活的有偏随机游走程序来实现这一点，该程序可以同时探索a中的邻域 BFS和DFS。</p>
+<h3 id="3-2-1-随机游走"><a href="#3-2-1-随机游走" class="headerlink" title="3.2.1 随机游走"></a>3.2.1 随机游走</h3><p>在形式上，给定一个源节点$u$，我们模拟一个固定长度$l$的随机游走，让$c_i$表示游走中的第$i$个节点，从$c_0 = u$开始，节点$c_i$由以下分布产生:</p>
+<script type="math/tex; mode=display">
+P(c_i = x | c_{i-1} = v) = 
+    \begin{cases}
+    \frac{\pi v x}{Z} & if (v, x) \in E \\
+    0 & otherwise
+    \end{cases}</script><p>其中$\pi v x$为节点$v$与$x$之间的未归一化转移概率，$Z$为归一化常数。</p>
+<h3 id="3-2-2-搜索偏差-alpha"><a href="#3-2-2-搜索偏差-alpha" class="headerlink" title="3.2.2 搜索偏差$\alpha$"></a>3.2.2 搜索偏差$\alpha$</h3><p><img src="/2020/01/05/graph-embedding-node2vec/figure2.png" alt="这里写图片描述"></p>
+<p>使随机游走产生偏差的最简单的方法是根据静态边权值$w_{vx}$对下一个节点进行抽样。例如，$\pi_{vx} = w_{vx}$。(对于未加权图$w_{vx} = 1$)。然而，这并不允许我们考虑网络结构，并指导我们的搜索过程探索不同类型的网络邻居。另外，与BFS和DFS不同的是，BFS和DFS是分别适用于结构等价性和同质性的极端抽样范式，我们的随机游走应该适应这样的事实，即这些等价的概念不是竞争的或排他的，而现实世界的网络通常是两者的混合。</p>
+<p>我们定义了一个二阶随机游走，它有两个参数$p$和$q$来引导这个游动:考虑一个只穿过边$(t, v)$，现在驻留在节点$v$上(图2)。现在，需要决定下一步走哪个节点，所以计算了从$v$出发在边$(v, x)$上的转移概率$\pi_{vx}$。我们将未归一化的转移概率设为$\pi_{vx} = \alpha_{pq}(t, x).w_{vx}$，其中</p>
+<script type="math/tex; mode=display">
+\alpha_{pq}(t, x) = 
+    \begin {cases}
+    \frac{1}{p} & if \,\,d_{tx} = 0 \\
+    1 & if \,\,d_{tx} = 1 \\
+    \frac{1}{q} & if \,\,d_{tx} = 2 \\
+    \end {cases}</script><p>$d_{tx}$表示节点$t$与$x$之间的最短路径距离。注意，$d_{tx}$必须是{0, 1, 2}中的一个。因此，这两个参数对于引导行走是必要且充分的。</p>
+<p>直观地看，参数$p$和$q$控制行走探索和离开起始节点$u$附近的速度。特别是，参数允许我们的搜索过程(近似地)在BFS和DFS之间插入。</p>
+<p><strong>返回参数(return parameter)</strong>，p。参数p控制了在遍历中重新访问一个节点的可能性。将它设置为一个高值(&gt; max(q, 1)确保我们不太可能在以下两个步骤中采样一个已经访问过的节点(除非遍历中的下一个节点没有其他邻居)。这种策略鼓励适度的探索，避免了采样中的两跳冗余。另一方面，如果p低(&lt; min(q，1))，它将导致walk回溯一个步骤(图2)，这将使walk接近起始节点u。</p>
+<p><strong>向内向外参数(In-out parameter)</strong>，q。参数q允许搜索区分“向内”和“向外”节点。回到图2，如果 q &gt; 1，则随机游走偏向于靠近节点t的节点(偏向BFS)。这样的遍历获得了底层图相对于遍历中的起始节点的局部视图，以及近似的BFS行为，因为我们的样本包含了一个小区域内的节点。而当q &lt; 1时，walk更倾向于访问距离$t$较远的节点(偏向DFS)。因此，采样节点与给定源节点$u$的距离不是严格递增的，但反过来，我们受益于可处理的预处理和随机游走的优越采样效率。请注意，通过将$\pi_{v,x}$设为$t$中前边节点的函数，随机游走是2阶马尔可夫过程。</p>
+<p><strong>随机游走的好处</strong>。在纯BFS/DFS方法上进行随机游走有几个好处。随机游走在空间和时间要求方面都具有很高的计算效率。存储图中每个节点的近邻的空间复杂度为$O(|E|)$。对于二阶随机游走，存储每个节点的邻居之间的相互连接是有帮助的，这导致$O(a^2|V |)$的空间复杂度，其中a是图的平均度，对于真实世界的网络通常是很小的。与传统的基于搜索的抽样策略相比，随机游走的另一个关键优势是它的时间复杂度。特别是，通过在样本生成过程中增加图连通，随机游动提供了一种方便的机制，通过跨不同源节点重用样本来提高有效采样率。由于随机漫步的马尔可夫链的性质，通过模拟的随机游走长度$l &gt; k$一次可以从$l -k$个节点中生成k个样品。这里，我们对每个样本采集的有效复杂度是$O(\frac{l}{k(l-k)})$。例如，在图1中我们抽样一个随机游走${u, S_4, S_5, S_6, S_8, S_9}$的长度$l = 6$，得到$N_S(u) = {S_4, S_5, S_6}, N_S(S_4) = {S_5, S_6, S_8}$和$N_S(S_5) = {S_6, S_8, S_9}$。请注意，样本复用可能会在整个过程中引入一些偏差。然而，我们注意到它大大提高了效率。</p>
+<h3 id="3-2-3-node2vec算法"><a href="#3-2-3-node2vec算法" class="headerlink" title="3.2.3 node2vec算法"></a>3.2.3 node2vec算法</h3><p><img src="/2020/01/05/graph-embedding-node2vec/alg1.png" alt="这里写图片描述"></p>
+<p>node2vec的伪代码在算法1中给出。在任意一个随机游走中，由于起始节点$u$的选择，都存在一个隐式偏差。由于我们学习了所有节点的表示，我们通过模拟从每个节点开始的固定长度$l$的随机游走来抵消这个偏差。在每一步中，采样都是基于转移概率$\pi_{vx}$来完成的。该算法可以预先计算二阶马尔可夫链的转移概率$\pi_{vx}$，从而利用别名采样(alias sampling)在O(1)时间内有效地模拟随机游走时的节点采样。node2vec的三个阶段，即，预处理计算转移概率，随机游走模拟和优化使用SGD，依次执行。<br>node2vec延伸资料: <a target="_blank" rel="noopener" href="http://snap.stanford.edu/node2vec">http://snap.stanford.edu/node2vec</a></p>
+<h2 id="3-3-学习边的特征"><a href="#3-3-学习边的特征" class="headerlink" title="3.3 学习边的特征"></a>3.3 学习边的特征</h2><p><img src="/2020/01/05/graph-embedding-node2vec/table1.png" alt="这里写图片描述"></p>
+<p>node2vec算法为学习网络中节点的丰富特征表示提供了一种半监督方法。然而，我们通常对涉及成对节点而不是单个节点的预测任务感兴趣。例如，在链路预测中，我们预测网络中两个节点之间是否存在链路。由于我们的随机游走自然基于底层网络中节点之间的连接结构，所以我们使用自举方法在单个节点的特性表示上将它们扩展到节点对。</p>
+<p>给出了两个节点$u$和$v$，定义了对应特征向量$f(u)$和$f(v)$上的一个二元算子$\omicron$，以生成一个表示$g(u, v)$类似$g: V \times V \to \Bbb{R}^{d’}$，其中$d’$为对$(u, v)$的表示大小。我们希望对任意一对节点定义操作符，即使这对节点之间不存在边，因为这样做可以使表示对链接预测有用，其中我们的测试集包含真边和假边(即，不存在)。我们考虑了几个操作符$\omicron$的选择，如表1中总结的$d’ = d$。</p>
+<h1 id="4-试验"><a href="#4-试验" class="headerlink" title="4. 试验"></a>4. 试验</h1><h2 id="4-1-案列分析：《悲惨世界》网络-Les-Miserables-network"><a href="#4-1-案列分析：《悲惨世界》网络-Les-Miserables-network" class="headerlink" title="4.1 案列分析：《悲惨世界》网络(Les Misérables network)"></a>4.1 案列分析：《悲惨世界》网络(Les Misérables network)</h2><p><img src="/2020/01/05/graph-embedding-node2vec/figure3.png" alt="这里写图片描述"></p>
+<p>在3.1节中，我们观察到，BFS和DFS策略代表了嵌入节点频谱上的两个极端，基于同质性原则(即，网络社区)以及结构等价性(即，节点的结构角色)。我们现在的目标是通过经验来证明这个事实，并证明node2vec实际上可以发现符合这两个原则的嵌入。</p>
+<p>我们使用一个网络，其中节点对应于小说《悲惨世界》[13]中的人物，边缘连接共同出现的人物。该网络有77个节点和254条边。我们设置$d = 16$并运行node2vec来学习网络中每个节点的特征表示。使用k- means对特征表示进行聚类。然后，我们在二维空间中可视化原始网络，现在节点根据它们的集群分配颜色。</p>
+<p>图3(顶部)显示了我们设置$p = 1, q = 0.5$时的示例。注意网络的区域(即，网络社区)使用相同的颜色。在这个场景中，node2vec发现了在小说的主要情节中经常相互作用的角色集群/社区。由于字符之间的边缘是基于共现的，我们可以得出结论，这种特征与同质性密切相关。</p>
+<p>为了发现哪些节点具有相同的结构角色，我们使用相同的网络，但设$p = 1, q = 2$，使用node2vec获取节点特征，然后根据获得的特征对节点进行聚类。在这里，node2vec获得了一个节点到集群的互补分配，这样颜色就对应于结构等价性，如图3(底部)所示。例如，node2vec将蓝色的节点嵌入在一起。这些节点代表了小说中不同次要情节之间的桥梁。类似地，黄色节点主要表示位于外围的字符，它们之间的交互作用有限。可以为这些节点集群分配不同的语义解释，但关键是node2vec并不与特定的等价概念相关联。我们的实验表明，这些等价概念通常出现在大多数真实网络中，并且对预测任务的学习表示的性能有显著影响。</p>
+<h2 id="4-2-试验设置"><a href="#4-2-试验设置" class="headerlink" title="4.2 试验设置"></a>4.2 试验设置</h2><p>我们的实验评估了通过node2vec获得的标准监督学习任务的特征表示:节点的多标签分类和边的链接预测。对于这两个任务，我们评估了node2vec相对于以下特征学习算法的性能:</p>
+<ul>
+<li>谱聚类[29]: 这是一种矩阵分解方法，我们取归一化的d个特征向量图G的拉普拉斯矩阵作为节点的特征向量表示。</li>
+<li>DeepWalk[24]: DeepWalk中的采样策略可以看作是node2vec的一个特例，即$p = 1, q = 1$。</li>
+<li>LINE[28]</li>
+</ul>
+<p>我们排除了其他矩阵分解方法，这些方法已经被证明不如DeepWalk[24]。我们也排除了最近的一种方法，GraRep[6]，它概括了LINE来合并超过2跳的网络邻居的信息，但是不能有效地扩展到大型网络。</p>
+<p>在采样阶段，将DeepWalk、LINE和node2vec的参数设置为在运行时生成相同数量的样本。例如，如果$\cal K$是总体的采样设定，那么node2vec参数满足$\cal K = \mit r.l.|V|$。在优化阶段，所有这些基准测试都使用SGD进行优化，其中有两个关键的差异需要我们进行校正。首先，DeepWalk使用分层抽样来近似softmax概率，其目标类似于node2vec使用的目标。然而，与负采样[22]相比，分层softmax是低效的。因此，在保持其他一切不变的情况下，我们对DeepWalk进行负采样。其次，node2vec和DeepWalk都有一个用于优化上下文邻居节点数量的参数，并且节点数量越大，需要进行的优化轮数就越多。这个参数被设置为和LINE一致的，但是LINE比其他方法更快地完成一个epoch，我们让它运行k个epoch。</p>
+<p>node2vec使用的参数设置与DeepWalk和LINE使用的典型值一致。具体地，我们设置$d = 128, r = 10, l = 80, k = 10$，并且优化运行一个epoch。我们对10个随机种子初始化重复实验，我们的结果具有统计学意义，p值小于0.01。通过在$p,q \in \{0.25, 0.50, 1, 2, 4\}$上进行网格搜索，对10%标记数据进行10次交叉验证，获得最佳的向内-向外和返回超参数。</p>
+<h2 id="4-3-多分类"><a href="#4-3-多分类" class="headerlink" title="4.3 多分类"></a>4.3 多分类</h2><p>在多标签分类设置中，每个节点从一个有限集$\cal L$中分配一个或多个标签。在训练阶段，我们观察一定比例的节点及其所有标签。任务是预测剩余节点的标签。这是一个具有挑战性的任务，尤其是当$\cal L$很大的时候。我们利用以下数据集:</p>
+<ul>
+<li><strong>BlogCatalog[38]</strong>: 这是BlogCatalog网站上列出的博客作者的社会关系网络。标签代表博主的兴趣，这些兴趣是通过博主提供的元数据推断出来的。网络有10,312个节点，333,983条边，39个不同的标签。</li>
+<li><strong>蛋白质-蛋白质相互作用(PPI)[5]</strong>: 我们使用PPI网络的一个子图来研究智人。该子图对应由节点诱导的图，我们可以从标志基因集[19]中获得标记，并表示生物状态。该网络有3,890个节点，76,584条边，以及50个不同的标签。</li>
+<li><strong>Wikipedia[20]</strong>: 这是一个由出现在Wikipedia转储的前一百万字节中的单词组成的并发网络。这些标签表示使用Stanford POS - Tagger[32]推断的词性(POS)标记。该网络有4,777个节点、184,812条边和40个不同的标签。</li>
+</ul>
+<p>所有这些网络都表现出相当程度的同质性和结构等价性。例如，我们期望博客的社交网络表现出强烈的基于同质性的关系；然而，也可能有一些“熟悉的陌生人”，即，博客不互动，但有共同的兴趣，因此在结构上是等同的节点。蛋白质-蛋白质相互作用网络中蛋白质的生物学状态也表现出这两种等价性。例如，当蛋白质执行与邻近蛋白质互补的功能时，它们表现出结构上的等价性;而在其他时候，它们以同质性为基础组织起来，协助邻近蛋白质执行类似的功能。摘要在维基百科语料库长度为2的窗口中，由于单词间的边界存在，所以单词间的关联网络比较密集。因此，具有相同POS标签的单词并不难找到，它们具有高度的同质性。同时，由于语法模式的不同，如名词跟在限定词后面，标点跟在名词后面等，我们希望POS标签在结构上能有一定的对等。</p>
+<p><img src="/2020/01/05/graph-embedding-node2vec/table2.png" alt="这里写图片描述"></p>
+<p><img src="/2020/01/05/graph-embedding-node2vec/figure4.png" alt="这里写图片描述"></p>
+<p><strong>实验结果。</strong>将节点特征表示输入到一个具有L2正则化的one-vs-rest逻辑回归分类器中。训练和测试数据平均分配在10个随机实例中。我们使用Macro-F1（宏观F1）分数来比较表2中的性能，相对性能增益超过了最接近的基准。Micro-F1（微观F1）和准确性的趋势是相似的。</p>
+<p>在BlogCatalog中，通过将参数$p$和$q$设置为较低的值来发现同质性和结构等价性的正确组合，从而Macro-F1得分超出DeepWalk22.3%、超过LINE229.2%。在PPI网络中，最好的探索策略($p = 4, q = 1$)与DeepWalk($p = 1, q = 1$)几乎没有区别，通过使用高p值避免已经访问过的节点的冗余，对比DeepWalk只有一个微弱优势，但是Macro-F1得分超出LINE23.8%。在维基百科中，均匀随机游走不能将搜索过程导向最佳样本，因此，macro-F1得分超出DeepWalk21.8%，超出LINE33.2%。</p>
+<p>在性能上，同时将训练测试从10%更改为90%，对10%的数据学习参数p和q。为简洁起见，结果如图4所示。所有的方法都明显优于谱聚类，DeepWalk优于LINE, node2vec始终优于LINE。例如，我们在BlogCatalog  70%的标签数据上取得了最大的进步，超过DeepWalk26.7%。</p>
+<h2 id="4-4-参数敏感度"><a href="#4-4-参数敏感度" class="headerlink" title="4.4 参数敏感度"></a>4.4 参数敏感度</h2><p><img src="/2020/01/05/graph-embedding-node2vec/figure5.png" alt="这里写图片描述"></p>
+<p>node2vec算法涉及许多参数，在图5a中，我们使用带标记和未带标记的数据各占一半的比例来研究不同参数的选择如何影响BlogCatalog数据集上node2vec的性能。除了要测试的参数外，其他所有参数都采用默认值。$p$和$q$的默认值设置为一致的。</p>
+<p>我们将宏观F1分数作为参数$p$和$q$的函数进行测量，node2vec的性能随着向内-向外参数$p$和返回参数$q$的降低而提高。性能的提高可以基于我们期望在BlogCatalog中看到的同质性和结构等价性。当低$q$值时鼓励向外探索时，它被低$p$值所平衡，这确保了行走不会离起始节点太远。</p>
+<p>我们还研究了特征数$d$和节点的邻域参数(步数$r$、步长$l$和邻域大小$k$)如何影响性能。我们观察到，一旦表示的维度达到100左右，性能就趋于饱和。类似地，观察到增加每个源的遍历次数和长度可以提高性能，因为有更大的总体抽样集$\cal K$来学习表示。另外上下文大小$k$也提高性能，代价是增加了优化时间。但是在这种情况下，性能差异不是很大。</p>
+<h2 id="4-5-扰动分析"><a href="#4-5-扰动分析" class="headerlink" title="4.5 扰动分析"></a>4.5 扰动分析</h2><p>对于许多真实的网络，我们无法获得关于网络结构的准确信息。我们进行了一个扰动研究，分析了node2vec在两个与BlogCatalog网络中的边结构相关的不完全信息场景下的性能。在第一个场景中，我们将性能作为缺失边的分数(相对于整个网络)的函数来度量。根据网络中连通分量数量不变的约束条件，随机选取缺失的边。从图5b(上)可以看出，随着缺失边比例的增加，宏观F1分数的下降大致呈线性，且斜率较小。</p>
+<p>在第二个扰动设置中，我们在网络中随机选择的节点对之间有噪声边。如图5b所示(下图)，与缺失边设置相比，node2vec的初始下降速度略快，但随着时间的推移，宏观F1分数的下降速度逐渐放缓。同样，node2vec对假边的鲁棒性在一些情况下是有用的，例如用于构建网络的测量是有噪声的传感器网络。</p>
+<h2 id="4-6-可扩展性-Scalability"><a href="#4-6-可扩展性-Scalability" class="headerlink" title="4.6 可扩展性(Scalability)"></a>4.6 可扩展性(Scalability)</h2><p><img src="/2020/01/05/graph-embedding-node2vec/table3.png" alt="这里写图片描述"></p>
+<p>为了测试可扩展性，我们使用node2vec学习节点表示，该节点表示具有Erdos-Renyi图的默认参数值，其大小从100个节点增加到100万个节点，平均度数为10。在图6中，我们根据经验观察到，node2vec随着节点数量的增加而线性扩展，在不到4小时的时间内为100万个节点生成表示。抽样程序包括计算我们的步行的转移概率的预处理和随机步行的模拟。利用负采样[22]和异步SGD[26]使优化阶段变得有效。</p>
+<h2 id="4-7-链路预测"><a href="#4-7-链路预测" class="headerlink" title="4.7 链路预测"></a>4.7 链路预测</h2><p><img src="/2020/01/05/graph-embedding-node2vec/table4.png" alt="这里写图片描述"></p>
+<p>在链路预测中，我们给定一个删除了一定比例边的网络，我们希望预测这些缺失边。我们生成边的标签数据集如下:获得正样本,我们除去50%的边缘随机选择从网络同时确保获得的残余网络边删除连接后,产生负样本,我们随机样本同等数量的节点对网络没有边缘连接。</p>
+<p>根据一些流行的启发式分数对node2vec进行了额外的评估，这些分数在链接预测中获得了良好的性能。我们考虑的分数是根据构成这一对的节点的邻域集来定义的(见表3)。我们在以下数据集测试我们的基准:</p>
+<ul>
+<li>Facebook[14]: 在Facebook网络中，节点代表用户，边代表任意两个用户之间的友谊关系。该网络有4,039个节点和88,234条边。</li>
+<li>蛋白-蛋白相互作用(PPI)[5]: 在PPI网络中，节点表示蛋白质，边表示一对蛋白质之间的生物相互作用。该网络有19,706个节点和390,633条边。</li>
+<li>arXiv ASTRO-PH[14]:这是一个协作网络，由提交给e-print arXiv的论文生成，其中节点代表科学家，如果两名科学家合作过一篇论文，则存在一条边。网络已经18,722个节点和198,110条边。</li>
+</ul>
+<p><strong>实验结果。</strong>我们在表4中总结了链接预测的结果。为了便于表示，省略了每个node2vec条目的最佳$p$和$q$参数设置。从结果中我们可以得出一个普遍的观察结果，即节点对的学习特征表示显著优于启发式基准评分，其中node2vec对arXiv数据集的AUC提升最好，比性能最佳的基线(Adamic-Adar[1])提高了12.6%。</p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>【Graph Embedding】node2vec</p><p><a href="http://example.com/2020/01/05/graph-embedding-node2vec/">http://example.com/2020/01/05/graph-embedding-node2vec/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>Buracag</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2020-01-05</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2020-10-06</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%87%E5%BF%98/">算法备忘</a><a class="link-muted mr-2" rel="tag" href="/tags/%E5%9B%BE%E8%AE%A1%E7%AE%97/">图计算</a><a class="link-muted mr-2" rel="tag" href="/tags/Embedding/">Embedding</a></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2020/01/14/graph-embedding-SDNE/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">【Graph Embedding】SDNE</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/12/26/graph-embedding-deepwalk/"><span class="level-item">【Graph Embedding】DeepWalk</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div id="comment-container"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css"><script src="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+            id: "753071befcc925482b1b26089eafa31c",
+            repo: "blog_comments",
+            owner: "buracagyang",
+            clientID: "b59e8ee91a1328df0e4b",
+            clientSecret: "e8a8251bb9bd5ec9913a699734a6824bea1d6ec3",
+            admin: "buracagyang",
+            createIssueManually: false,
+            distractionFreeMode: false,
+            perPage: 20,
+            pagerDirection: "last",
+            
+            
+            enableHotKey: true,
+            
+        })
+        gitalk.render('comment-container')</script></div></div></div><!--!--><div class="column column-right is-4-tablet is-4-desktop is-4-widescreen  order-3 is-sticky"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#摘要"><span class="level-left"><span class="level-item">摘要</span></span></a></li><li><a class="level is-mobile" href="#1-介绍"><span class="level-left"><span class="level-item">1. 介绍</span></span></a></li><li><a class="level is-mobile" href="#2-相关工作"><span class="level-left"><span class="level-item">2. 相关工作</span></span></a></li><li><a class="level is-mobile" href="#3-特征学习框架"><span class="level-left"><span class="level-item">3. 特征学习框架</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#3-1-经典搜索策略"><span class="level-left"><span class="level-item">3.1 经典搜索策略</span></span></a></li><li><a class="level is-mobile" href="#3-2-node2vec"><span class="level-left"><span class="level-item">3.2 node2vec</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#3-2-1-随机游走"><span class="level-left"><span class="level-item">3.2.1 随机游走</span></span></a></li><li><a class="level is-mobile" href="#3-2-2-搜索偏差-alpha"><span class="level-left"><span class="level-item">3.2.2 搜索偏差$\alpha$</span></span></a></li><li><a class="level is-mobile" href="#3-2-3-node2vec算法"><span class="level-left"><span class="level-item">3.2.3 node2vec算法</span></span></a></li></ul></li><li><a class="level is-mobile" href="#3-3-学习边的特征"><span class="level-left"><span class="level-item">3.3 学习边的特征</span></span></a></li></ul></li><li><a class="level is-mobile" href="#4-试验"><span class="level-left"><span class="level-item">4. 试验</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#4-1-案列分析：《悲惨世界》网络-Les-Miserables-network"><span class="level-left"><span class="level-item">4.1 案列分析：《悲惨世界》网络(Les Misérables network)</span></span></a></li><li><a class="level is-mobile" href="#4-2-试验设置"><span class="level-left"><span class="level-item">4.2 试验设置</span></span></a></li><li><a class="level is-mobile" href="#4-3-多分类"><span class="level-left"><span class="level-item">4.3 多分类</span></span></a></li><li><a class="level is-mobile" href="#4-4-参数敏感度"><span class="level-left"><span class="level-item">4.4 参数敏感度</span></span></a></li><li><a class="level is-mobile" href="#4-5-扰动分析"><span class="level-left"><span class="level-item">4.5 扰动分析</span></span></a></li><li><a class="level is-mobile" href="#4-6-可扩展性-Scalability"><span class="level-left"><span class="level-item">4.6 可扩展性(Scalability)</span></span></a></li><li><a class="level is-mobile" href="#4-7-链路预测"><span class="level-left"><span class="level-item">4.7 链路预测</span></span></a></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a><p class="is-size-7"><span>&copy; 2022 Buracag</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
