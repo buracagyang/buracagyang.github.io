@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>信息论1-熵 - Hexo</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Hexo"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Hexo"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="同步于CSDN;音尘杂记 信息论（Information Theory）是数学、物理、统计、计算机科学等多个学科的交叉领域。信息论是由Claude Shannon 最早提出的，主要研究信息的量化、存储和通信等方法。这里，“信息”是指一组消息的集合。假设在一个噪声通道上发送消息，我们需要考虑如何对每一个信息进行编码、传输以及解码，使得接收者可以尽可能准确地重构出消息。 在机器学习相关领域，信息论也有"><meta property="og:type" content="blog"><meta property="og:title" content="信息论1-熵"><meta property="og:url" content="http://example.com/2019/06/21/information-theory-1/"><meta property="og:site_name" content="Hexo"><meta property="og:description" content="同步于CSDN;音尘杂记 信息论（Information Theory）是数学、物理、统计、计算机科学等多个学科的交叉领域。信息论是由Claude Shannon 最早提出的，主要研究信息的量化、存储和通信等方法。这里，“信息”是指一组消息的集合。假设在一个噪声通道上发送消息，我们需要考虑如何对每一个信息进行编码、传输以及解码，使得接收者可以尽可能准确地重构出消息。 在机器学习相关领域，信息论也有"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://example.com/img/og_image.png"><meta property="article:published_time" content="2019-06-21T05:52:58.000Z"><meta property="article:modified_time" content="2019-06-24T08:37:38.000Z"><meta property="article:author" content="John Doe"><meta property="article:tag" content="技术备忘"><meta property="article:tag" content="基础知识"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2019/06/21/information-theory-1/"},"headline":"信息论1-熵","image":["http://example.com/img/og_image.png"],"datePublished":"2019-06-21T05:52:58.000Z","dateModified":"2019-06-24T08:37:38.000Z","author":{"@type":"Person","name":"John Doe"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"http://example.com/img/logo.svg"}},"description":"同步于CSDN;音尘杂记 信息论（Information Theory）是数学、物理、统计、计算机科学等多个学科的交叉领域。信息论是由Claude Shannon 最早提出的，主要研究信息的量化、存储和通信等方法。这里，“信息”是指一组消息的集合。假设在一个噪声通道上发送消息，我们需要考虑如何对每一个信息进行编码、传输以及解码，使得接收者可以尽可能准确地重构出消息。 在机器学习相关领域，信息论也有"}</script><link rel="canonical" href="http://example.com/2019/06/21/information-theory-1/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2019-06-21T05:52:58.000Z" title="2019/6/21 13:52:58">2019-06-21</time></span><span class="level-item">Updated&nbsp;<time dateTime="2019-06-24T08:37:38.000Z" title="2019/6/24 16:37:38">2019-06-24</time></span><span class="level-item">6 minutes read (About 912 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">信息论1-熵</h1><div class="content"><p>同步于<a target="_blank" rel="noopener" href="https://blog.csdn.net/buracag_mc">CSDN</a>;<a target="_blank" rel="noopener" href="https://www.runblog.online/">音尘杂记</a></p>
+<p><strong>信息论（Information Theory）</strong>是数学、物理、统计、计算机科学等多个学科的交叉领域。信息论是由Claude Shannon 最早提出的，主要研究信息的量化、存储和通信等方法。这里，“信息”是指一组消息的集合。假设在一个噪声通道上发送消息，我们需要考虑如何对每一个信息进行编码、传输以及解码，使得接收者可以尽可能准确地重构出消息。</p>
+<p>在机器学习相关领域，信息论也有着大量的应用。比如特征抽取、统计推断、自然语言处理等。</p>
+<span id="more"></span>
+<h1 id="1-自信息和熵"><a href="#1-自信息和熵" class="headerlink" title="1. 自信息和熵"></a>1. 自信息和熵</h1><p><strong>熵（Entropy）</strong>最早是物理学的概念，用于表示一个热力学系统的无序程度。在信息论中，熵用来衡量一个随机事件的不确定性。假设对一个随机变量$X$（取值集合为$\cal{X}$，概率分布为$p(x), x \in \cal{X}$）进行编码，<strong>自信息（Self Information）</strong> $I(x)$是变量$X = x$时的信息量或编码长度，定义为</p>
+<script type="math/tex; mode=display">
+I(x) = −log(p(x)) \tag{1}</script><p>那么随机变量$X$的平均编码长度，即熵定义为</p>
+<script type="math/tex; mode=display">
+H(X) = \Bbb{E}_X[I(x)] = \Bbb{E}_X[−log(p(x))] = −\sum_{x \in \cal{X}}p(x) log p(x) \tag{2}</script><p>其中当$p(x_i) = 0$时，我们定义$0 log 0 = 0$，与极限一致，$\lim_{p\to 0+} p log p = 0$。</p>
+<p>熵是一个随机变量的平均编码长度，即自信息的数学期望。熵越高，则随机变量的信息越多，熵越低；则信息越少。如果变量$X$当且仅当在$x$时$p(x) = 1$，则熵为0。也就是说，对于一个<strong>确定的信息(不确定概率为0)</strong>，其熵为0，信息量也为0。如果其概率分布为一个均匀分布，则熵最大。假设一个随机变量X 有三种可能值$x_1, x_2, x_3$，不同概率分布对应的熵如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">p(x1)</th>
+<th style="text-align:center">p(x2)</th>
+<th style="text-align:center">p(x3)</th>
+<th style="text-align:center">熵</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">1/2</td>
+<td style="text-align:center">1/4</td>
+<td style="text-align:center">1/4</td>
+<td style="text-align:center">$\frac{3}{2}(log2)$</td>
+</tr>
+<tr>
+<td style="text-align:center">1/3</td>
+<td style="text-align:center">1/3</td>
+<td style="text-align:center">1/3</td>
+<td style="text-align:center">log3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="2-联合熵和条件熵"><a href="#2-联合熵和条件熵" class="headerlink" title="2. 联合熵和条件熵"></a>2. 联合熵和条件熵</h1><p>对于两个离散随机变量$X$和$Y$ ，假设$X$取值集合为$cal{X}$；$Y$取值集合为$\cal{Y}$，其联合概率分布满足为$p(x, y)$，</p>
+<p>则$X$和$Y$的<strong>联合熵（Joint Entropy）</strong>为</p>
+<script type="math/tex; mode=display">
+H(X, Y) = −\sum_{x \in \cal{X}} \sum_{y \in \cal{Y}}p(x, y) log p(x, y) \tag{3}</script><p>$X$和$Y$的<strong>条件熵（Conditional Entropy）</strong>为</p>
+<script type="math/tex; mode=display">
+H(X|Y) = −\sum_{x \in \cal{X}} \sum_{y \in \cal{Y}}p(x, y) log p(x|y) = −\sum_{x \in \cal{X}} \sum_{y \in \cal{Y}}p(x, y) log \frac{p(x,y)}{p(y)} \tag{4}</script><p>根据其定义，条件熵也可以写为</p>
+<script type="math/tex; mode=display">
+H(X|Y) = H(X, Y) − H(Y) \tag{5}</script><h1 id="3-互信息"><a href="#3-互信息" class="headerlink" title="3. 互信息"></a>3. 互信息</h1><p><strong>互信息（Mutual Information）</strong>是衡量已知一个变量时，另一个变量不确定性的减少程度。两个离散随机变量X 和Y 的互信息定义为</p>
+<script type="math/tex; mode=display">
+I(X; Y ) =\sum_{x \in \cal{X}} \sum_{y \in \cal{Y}}p(x, y) \frac{log p(x, y)}{p(x)p(y)} \tag{6}</script><p>互信息的一个性质为</p>
+<script type="math/tex; mode=display">
+\begin{eqnarray}
+I(X;Y) &=& H(X) − H(X|Y) \tag{7} \\
+&=& H(Y) − H(Y|X) \tag{8} \\
+&=& H(X) + H(Y) - H(X, Y) \tag{9}
+\end{eqnarray}</script><p>如果X和Y相互独立，即X不对Y提供任何信息，反之亦然，因此它们的互信息最小， 即$I(X;Y)$为零。</p>
+<p>主要参考<a target="_blank" rel="noopener" href="https://github.com/nndl/nndl.github.io">https://github.com/nndl/nndl.github.io</a></p>
+</div><div class="article-licensing box"><div class="licensing-title"><p>信息论1-熵</p><p><a href="http://example.com/2019/06/21/information-theory-1/">http://example.com/2019/06/21/information-theory-1/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>John Doe</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2019-06-21</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2019-06-24</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E6%8A%80%E6%9C%AF%E5%A4%87%E5%BF%98/">技术备忘</a><a class="link-muted mr-2" rel="tag" href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">基础知识</a></div><div class="notification is-danger">You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.</div></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" href="/" target="_blank" rel="noopener" data-type="afdian"><span class="icon is-small"><i class="fas fa-charging-station"></i></span><span>Afdian.net</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="patreon"><span class="icon is-small"><i class="fab fa-patreon"></i></span><span>Patreon</span></a><div class="notification is-danger">You forgot to set the <code>business</code> or <code>currency_code</code> for Paypal. Please set it in <code>_config.yml</code>.</div><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2019/06/21/information-theory-2/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">信息论2-交叉熵和散度</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/06/19/mathematical-optimization-3/"><span class="level-item">数学优化3-拉格朗日乘数法与KKT条件</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div class="notification is-danger">You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.</div></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="Your name"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Your name</p><p class="is-size-6 is-block">Your title</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Your location</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">35</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">0</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/ppoffice" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/ppoffice"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Dribbble" href="https://dribbble.com"><i class="fab fa-dribbble"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-自信息和熵"><span class="level-left"><span class="level-item">1</span><span class="level-item">1. 自信息和熵</span></span></a></li><li><a class="level is-mobile" href="#2-联合熵和条件熵"><span class="level-left"><span class="level-item">2</span><span class="level-item">2. 联合熵和条件熵</span></span></a></li><li><a class="level is-mobile" href="#3-互信息"><span class="level-left"><span class="level-item">3</span><span class="level-item">3. 互信息</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">Links</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><!--!--><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2020-01-15T05:13:57.000Z">2020-01-15</time></p><p class="title"><a href="/2020/01/15/graph-embedding-struc2vec/">【Graph Embedding】struc2vec</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2020-01-14T05:55:09.000Z">2020-01-14</time></p><p class="title"><a href="/2020/01/14/graph-embedding-SDNE/">【Graph Embedding】SDNE</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2020-01-05T11:36:25.000Z">2020-01-05</time></p><p class="title"><a href="/2020/01/05/graph-embedding-node2vec/">【Graph Embedding】node2vec</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2019-12-26T08:16:26.000Z">2019-12-26</time></p><p class="title"><a href="/2019/12/26/graph-embedding-deepwalk/">【Graph Embedding】DeepWalk</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2019-12-21T09:12:54.000Z">2019-12-21</time></p><p class="title"><a href="/2019/12/21/graph-embedding-line/">【Graph Embedding】line</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">Archives</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2020/01/"><span class="level-start"><span class="level-item">January 2020</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/12/"><span class="level-start"><span class="level-item">December 2019</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/08/"><span class="level-start"><span class="level-item">August 2019</span></span><span class="level-end"><span class="level-item tag">7</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/07/"><span class="level-start"><span class="level-item">July 2019</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/06/"><span class="level-start"><span class="level-item">June 2019</span></span><span class="level-end"><span class="level-item tag">13</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/05/"><span class="level-start"><span class="level-item">May 2019</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">Tags</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Embedding/"><span class="tag">Embedding</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%9B%BE%E8%AE%A1%E7%AE%97/"><span class="tag">图计算</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"><span class="tag">基础知识</span><span class="tag">12</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"><span class="tag">大数据</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%8A%80%E6%9C%AF%E5%A4%87%E5%BF%98/"><span class="tag">技术备忘</span><span class="tag">28</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="tag">机器学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%87%E5%BF%98/"><span class="tag">算法备忘</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E8%BF%90%E7%94%A8/"><span class="tag">统计学运用</span><span class="tag">4</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">Subscribe for updates</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div><div class="card widget"><div class="card-content"><div class="notification is-danger">You need to set <code>client_id</code> and <code>slot_id</code> to show this AD unit. Please set it in <code>_config.yml</code>.</div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">follow.it</h3><form action="" method="post" target="_blank"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a><p class="is-size-7"><span>&copy; 2022 John Doe</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Logistic loss函数 - Hexo</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="Hexo"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Hexo"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="同步于CSDN;音尘杂记 前面在浏览sklearn中关于Logistic Regression部分，看到关于带正则项的LR目标损失函数的定义形式的时候，对具体表达式有点困惑，后查阅资料，将思路整理如下。"><meta property="og:type" content="blog"><meta property="og:title" content="Logistic loss函数"><meta property="og:url" content="http://example.com/2019/05/29/logistic-loss-function/"><meta property="og:site_name" content="Hexo"><meta property="og:description" content="同步于CSDN;音尘杂记 前面在浏览sklearn中关于Logistic Regression部分，看到关于带正则项的LR目标损失函数的定义形式的时候，对具体表达式有点困惑，后查阅资料，将思路整理如下。"><meta property="og:locale" content="en_US"><meta property="og:image" content="http://example.com/2019/05/29/logistic-loss-function/20170827141819860.png"><meta property="article:published_time" content="2019-05-29T09:16:09.000Z"><meta property="article:modified_time" content="2019-06-03T10:51:02.000Z"><meta property="article:author" content="John Doe"><meta property="article:tag" content="统计学运用"><meta property="article:tag" content="算法备忘"><meta property="article:tag" content="机器学习"><meta property="twitter:card" content="summary"><meta property="twitter:image:src" content="http://example.com/2019/05/29/logistic-loss-function/20170827141819860.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2019/05/29/logistic-loss-function/"},"headline":"Logistic loss函数","image":["http://example.com/2019/05/29/logistic-loss-function/20170827141819860.png"],"datePublished":"2019-05-29T09:16:09.000Z","dateModified":"2019-06-03T10:51:02.000Z","author":{"@type":"Person","name":"John Doe"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"http://example.com/img/logo.svg"}},"description":"同步于CSDN;音尘杂记 前面在浏览sklearn中关于Logistic Regression部分，看到关于带正则项的LR目标损失函数的定义形式的时候，对具体表达式有点困惑，后查阅资料，将思路整理如下。"}</script><link rel="canonical" href="http://example.com/2019/05/29/logistic-loss-function/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.0.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if (!$tabMenu) {
+            return;
+          }
+
+          const $tabMenuContainer = $tabMenu.parentElement.parentElement;
+          Array.from($tabMenuContainer.children).forEach($menu => $menu.classList.remove('is-active'));
+          Array.from($tabMenuContainer.querySelectorAll('a'))
+              .map($menu => document.getElementById($menu.getAttribute("href").substring(1)))
+              .forEach($content => $content.classList.add('is-hidden'));
+
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="Catalogue" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2019-05-29T09:16:09.000Z" title="2019/5/29 17:16:09">2019-05-29</time></span><span class="level-item">Updated&nbsp;<time dateTime="2019-06-03T10:51:02.000Z" title="2019/6/3 18:51:02">2019-06-03</time></span><span class="level-item">13 minutes read (About 1920 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">Logistic loss函数</h1><div class="content"><p>同步于<a target="_blank" rel="noopener" href="https://blog.csdn.net/buracag_mc">CSDN</a>;<a target="_blank" rel="noopener" href="https://www.runblog.online/">音尘杂记</a></p>
+<p>前面在浏览sklearn中关于<a target="_blank" rel="noopener" href="https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression" title="Logistic Regression">Logistic Regression</a>部分，看到关于带正则项的LR目标损失函数的定义形式的时候，对具体表达式有点困惑，后查阅资料，将思路整理如下。</p>
+<span id="more"></span>
+<h1 id="1-sklearn文档中的LR损失函数"><a href="#1-sklearn文档中的LR损失函数" class="headerlink" title="1. sklearn文档中的LR损失函数"></a>1. sklearn文档中的LR损失函数</h1><p>先看sklearn对于LR目标损失函数(带L2)的定义：</p>
+<script type="math/tex; mode=display">
+\min_{w, c} \frac{1}{2}w^T w + C \sum_{i=1}^n \log(\exp(- y_i (X_i^T w + c)) + 1)</script><p>看到这个表达形式，其实是有两个疑问：</p>
+<ul>
+<li><p>logistic loss的表达形式</p>
+</li>
+<li><p>正则项的惩罚系数</p>
+</li>
+</ul>
+<p>对于第二个问题，其实比较容易解释。通常我们在最小化结构风险时，会给我们的惩罚项乘上一个惩罚系数λ(通常1 &lt; λ &lt; 0)，</p>
+<script type="math/tex; mode=display">
+\min_{w, λ} \sum_{i=1}^nloss(y, y_i) + λw^T w</script><p>一般，为方便处理，做一个技巧性地处理，对多项式乘上一个正数 1/2λ, 得到：</p>
+<script type="math/tex; mode=display">
+\min_{w, λ} \frac{1}{2λ}\sum_{i=1}^nloss(y, y_i) + \frac{1}{2}w^T w</script><p>令C = 1/2λ即可。</p>
+<p>但是对于第一个形式，当时比较困惑；特意翻看了一下我以前记录的关于<a target="_blank" rel="noopener" href="https://blog.csdn.net/buracag_mc/article/details/77620686" title="LR损失函数">LR以及LR损失函数</a>的一些笔记。</p>
+<h1 id="2-LR损失函数"><a href="#2-LR损失函数" class="headerlink" title="2. LR损失函数"></a>2. LR损失函数</h1><p>为了方便说明笔者当时的疑惑所在，便将当时脑海里存在的logistic loss函数形式 和 sklearn中LR损失函数的推导方法分别记为旧思路和新思路吧。</p>
+<h2 id="2-1-logistic基础知识"><a href="#2-1-logistic基础知识" class="headerlink" title="2.1 logistic基础知识"></a>2.1 logistic基础知识</h2><p>如指数分布、高斯分布等分布一样，logistic是一种变量的分布，它也有自己的概率分布函数和概率密度函数，其中概率分布函数如下：</p>
+<script type="math/tex; mode=display">
+F(x) = P(X \leq x) = \frac{1}{1+e^{-(x-\mu)/\gamma}}</script><p>对概率分布函数求导，记得到对应的概率密度函数：</p>
+<script type="math/tex; mode=display">
+f(x) = \frac{e^{-(x- \mu)/ \gamma}}{\gamma(1+e^{-(x-\mu)/\gamma})^2}</script><p>其中，$\mu$就是分布对应的均值，$\gamma$是对应的形状参数。</p>
+<p>下文，为简介方便起见，将$-(x-\mu)/\gamma$ 替换为 $-x$,故记为：</p>
+<script type="math/tex; mode=display">
+F(x) = \frac{1}{1+exp(-x)}</script><p>对应示例图如下：<br><img src="/2019/05/29/logistic-loss-function/20170827141819860.png" alt="这里写图片描述"></p>
+<p>logistic有一个很重要的性质是：</p>
+<script type="math/tex; mode=display">
+F(-x) = \frac{1}{1+exp(x)} = \frac{1}{1+\frac{1}{exp(-x)}} =
+\frac{exp(-x)}{1+exp(-x)}=1-\frac{1}{1+exp(-x)}=1-F(x)</script><p>通常，应用到LR中，有如下形式：</p>
+<blockquote>
+<p><strong>(1)</strong></p>
+<script type="math/tex; mode=display">
+P(Y=1|\beta,x) = \frac{1}{1+exp(-\beta x)} = \frac{e^{\beta x}}{1+e^{\beta x}}</script><script type="math/tex; mode=display">
+P(Y=0|\beta,x) = 1 - \frac{1}{1+exp(-\beta x)} = \frac{1}{1+e^{\beta x}}</script><p>一个事件的几率(odds)，定义为该事件发生与不发生的概率比值，若事件发生概率为p：</p>
+</blockquote>
+<script type="math/tex; mode=display">
+odds = \frac{p}{1-p}</script><p>那么该事件的对数几率（log odds或者logit）如下：</p>
+<script type="math/tex; mode=display">
+logit(p)=log\frac{p}{1−p}</script><p>那么，对于上述二项，Y=1的对数几率就是：</p>
+<script type="math/tex; mode=display">
+log \frac{P(Y=1|\beta,x)}{1−P(Y=1|\beta,x)}=log \frac{P(Y=1|\beta,x)}{P(Y=0|\beta,x)}=\beta x</script><p>也就是说，输出Y=1的对数几率是由输入x的线性函数表示的模型，这就是逻辑回归模型。易知，当 $\beta x$的值越大，$P(Y=1|\beta,x)$越接近1；$\beta x$越小,$P(Y=1|\beta,x)$ 越接近0。</p>
+<p>其实，LR就是一个线性分类的模型。与线性回归不同的是：LR将线性方程输出的很大范围的数压缩到了[0,1]区间上；更优雅地说：<strong>LR就是一个被logistic方程归一化后的线性回归</strong>。</p>
+<h2 id="2-2-旧思路"><a href="#2-2-旧思路" class="headerlink" title="2.2 旧思路"></a>2.2 旧思路</h2><p>旧思路要从LR的参数求解过程说起。</p>
+<p>我们知道统计学中一种很常用的方法是根据最大化似然函数的值来估计总体参数。在机器学习领域，我们听到的更多是损失函数的概念，常通过构建损失函数，然后最小化损失函数估计目标参数。在这里，<strong>最大化对数似然函数与最小化对数似然损失函数其实是等价的</strong>，下面我们可以看到。</p>
+<ul>
+<li><p>假设我们有n个独立的训练样本$\{(x_1,y_1),(x_2,y_2),(x_3,y_3),…,(x_n,y_n)\},y={0,1}$,那么每一个观察到的样本$(x_i,y_i)$出现的概率是：</p>
+<script type="math/tex; mode=display">
+P(y_i,x_i) = P(y_i=1 | x_i)^{y_i}(1-P(y_i=1 | x_i))^{1-y_i}</script><p>显然，$y_i$为1时，保留前半部分；$y_i$为0时，保留后半部分。</p>
+</li>
+<li><p>构建似然函数：</p>
+<script type="math/tex; mode=display">
+L(\beta) = \prod P(y_i=1|x_i)^{y_i}(1-P(y_i=1|x_i))^{1-y_i}</script></li>
+<li><p>OK,对似然函数取对数，得到对数似然函数：</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">LL(\beta) = log(L(\beta))= log(\prod P(y_i=1|x_i)^{y_i}(1-P(y_i=1|x_i))^{1-y_i})</script><p> $= \sum_{i=1}^{n}(y_i log P(y_i=1|x_i) + (1-y_i)log(1-P(y_i=1|x_i)))$</p>
+<p> $= \sum_{i=1}^{n}y_i log \frac{P(y_i=1|x_i)}{1-P(y_i=1|x_i)} + \sum_{i=1}^{n}log(1-P(y_i=1|x_i))$</p>
+<p> $= \sum_{i=1}^{n}y_i(\beta x) + \sum_{i=1}^{n}logP(y_i=0|x_i)$</p>
+<p> $= \sum_{i=1}^{n}y_i(\beta x) - \sum_{i=1}^{n}log(1+e^{\beta x})$</p>
+<ul>
+<li><p>用 $LL(\beta)$ 对 $\beta$ 求偏导，得：<br>$\frac{\partial LL(\beta)}{\partial \beta}<br>= \sum_{i=1}^{n}y_ix_i - \sum_{i=1}^{n} \frac{e^{\beta x_i}}{1+e^{\beta x_i}}.x_i$</p>
+<p>$= \sum_{i=1}^{n}(y_i - P(y_i=1|x_i))x_i$<br>该式是无法解析求解，故会用到一些优化算法进行求解(梯度下降、牛顿法等)，这不是本文重点，便不再赘述。</p>
+</li>
+</ul>
+<p>咋一看的确与sklearn中的形式差别有点大，所以请看新思路。</p>
+<h2 id="2-3-新思路"><a href="#2-3-新思路" class="headerlink" title="2.3 新思路"></a>2.3 新思路</h2><p>在式(1)中， $x$表示特征向量，$\beta$表示相应的超参数，此时$y\in({0, 1})$表示样本对应的标签(label)。</p>
+<p>这里，特别要讲的是另一种表达形式，将标签与预测函数在形式上统一了：</p>
+<blockquote>
+<p><strong>(2)</strong></p>
+<script type="math/tex; mode=display">
+P(g=\pm1 |\beta, x) = \frac{1}{1+exp(-g\beta x)}</script></blockquote>
+<p>此时的样本标签$g\in({1, -1})$。</p>
+<p>虽然式(1)与式(2)看起来似乎不同，但是我们可以有如下证明：</p>
+<script type="math/tex; mode=display">
+P(Y=1|\beta,x) = \frac{e^{\beta x}}{1+e^{\beta x}} =  \frac{1}{1+exp(-\beta x)} = P(g=1 |\beta, x)</script><p>同理，我们可以证明$P(Y=0|\beta,x)$ 和 $P(g=-1|\beta,x)$是等价的。</p>
+<p>既然两种形式是等价的，为了适应更加广泛的分类loss最小化的框架，故采用第二种形式来表示LR.毕竟<strong>Simple is better than complex.</strong></p>
+<p>首先定义$x_i$为特征向量，$y_i$为样本标签,则目标损失函数可以表示为：</p>
+<script type="math/tex; mode=display">
+arg\min_{\beta}\sum_{i=1}L(y_i, f(x_i))</script><p>其中，f是我们的回归方程，L是目标损失函数。</p>
+<p>对应到LR中，我们有</p>
+<script type="math/tex; mode=display">
+f(x) = \beta x</script><script type="math/tex; mode=display">
+L(y, f(x)) = log(1 + exp(-yf(x)))</script><p>如果将LR的第二种表达形式带入到损失函数L中，可得：</p>
+<script type="math/tex; mode=display">
+L(y, f(x)) = log(1 + exp(-yf(x))) = log(\frac{1}{P(y|\beta,x)})</script><p>再进一步：</p>
+<script type="math/tex; mode=display">
+arg\min_{\beta}\sum_{i=1}L(y_i, f(x_i)) = arg\min_{\beta}\sum_{i=1}log(\frac{1}{P(y_i|\beta,x_i)})</script><script type="math/tex; mode=display">
+= arg\max_{\beta}\sum_{i=1}log(P(y_i|\beta,x_i))= arg\max_{\beta}\prod_{i=1}P(y_i|\beta,x_i)</script><p><strong>等式最后即为极大似然估计的表达形式。</strong></p>
+<h1 id="3-思考"><a href="#3-思考" class="headerlink" title="3. 思考"></a>3. 思考</h1><p>其实到这儿，我们不难发现在旧思路中，推导极大化对数似然函数中的第二步：<br>$= \sum_{i=1}^{n}(y_i log P(y_i=1|x_i) + (1-y_i)log(1-P(y_i=1|x_i)))$</p>
+<p>与新思路中的：</p>
+<script type="math/tex; mode=display">
+=arg\max_{\beta}\sum_{i=1}log(P(y_i|\beta,x_i))</script><p><strong>本质是统一的。</strong></p>
+<p>最后</p>
+<blockquote>
+<p><strong>“Simple is better than complex.”   — The Zen of Python, by Tim Peters</strong></p>
+</blockquote>
+</div><div class="article-licensing box"><div class="licensing-title"><p>Logistic loss函数</p><p><a href="http://example.com/2019/05/29/logistic-loss-function/">http://example.com/2019/05/29/logistic-loss-function/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>John Doe</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2019-05-29</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2019-06-03</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E8%BF%90%E7%94%A8/">统计学运用</a><a class="link-muted mr-2" rel="tag" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%87%E5%BF%98/">算法备忘</a><a class="link-muted mr-2" rel="tag" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></div><div class="notification is-danger">You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.</div></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" href="/" target="_blank" rel="noopener" data-type="afdian"><span class="icon is-small"><i class="fas fa-charging-station"></i></span><span>Afdian.net</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="patreon"><span class="icon is-small"><i class="fab fa-patreon"></i></span><span>Patreon</span></a><div class="notification is-danger">You forgot to set the <code>business</code> or <code>currency_code</code> for Paypal. Please set it in <code>_config.yml</code>.</div><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2019/06/03/quantile-regression/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">分位数回归简介</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2019/05/29/python-basic-about-class/"><span class="level-item">Python中定义类的相关知识</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div class="notification is-danger">You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.</div></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="Your name"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Your name</p><p class="is-size-6 is-block">Your title</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Your location</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">35</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">0</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">9</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/ppoffice" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/ppoffice"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Dribbble" href="https://dribbble.com"><i class="fab fa-dribbble"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">Catalogue</h3><ul class="menu-list"><li><a class="level is-mobile" href="#1-sklearn文档中的LR损失函数"><span class="level-left"><span class="level-item">1</span><span class="level-item">1. sklearn文档中的LR损失函数</span></span></a></li><li><a class="level is-mobile" href="#2-LR损失函数"><span class="level-left"><span class="level-item">2</span><span class="level-item">2. LR损失函数</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#2-1-logistic基础知识"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">2.1 logistic基础知识</span></span></a></li><li><a class="level is-mobile" href="#2-2-旧思路"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">2.2 旧思路</span></span></a></li><li><a class="level is-mobile" href="#2-3-新思路"><span class="level-left"><span class="level-item">2.3</span><span class="level-item">2.3 新思路</span></span></a></li></ul></li><li><a class="level is-mobile" href="#3-思考"><span class="level-left"><span class="level-item">3</span><span class="level-item">3. 思考</span></span></a></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">Links</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><!--!--><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2020-01-15T05:13:57.000Z">2020-01-15</time></p><p class="title"><a href="/2020/01/15/graph-embedding-struc2vec/">【Graph Embedding】struc2vec</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2020-01-14T05:55:09.000Z">2020-01-14</time></p><p class="title"><a href="/2020/01/14/graph-embedding-SDNE/">【Graph Embedding】SDNE</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2020-01-05T11:36:25.000Z">2020-01-05</time></p><p class="title"><a href="/2020/01/05/graph-embedding-node2vec/">【Graph Embedding】node2vec</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2019-12-26T08:16:26.000Z">2019-12-26</time></p><p class="title"><a href="/2019/12/26/graph-embedding-deepwalk/">【Graph Embedding】DeepWalk</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2019-12-21T09:12:54.000Z">2019-12-21</time></p><p class="title"><a href="/2019/12/21/graph-embedding-line/">【Graph Embedding】line</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">Archives</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2020/01/"><span class="level-start"><span class="level-item">January 2020</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/12/"><span class="level-start"><span class="level-item">December 2019</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/08/"><span class="level-start"><span class="level-item">August 2019</span></span><span class="level-end"><span class="level-item tag">7</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/07/"><span class="level-start"><span class="level-item">July 2019</span></span><span class="level-end"><span class="level-item tag">4</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/06/"><span class="level-start"><span class="level-item">June 2019</span></span><span class="level-end"><span class="level-item tag">13</span></span></a></li><li><a class="level is-mobile" href="/archives/2019/05/"><span class="level-start"><span class="level-item">May 2019</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">Tags</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/Embedding/"><span class="tag">Embedding</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/Python/"><span class="tag">Python</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%9B%BE%E8%AE%A1%E7%AE%97/"><span class="tag">图计算</span><span class="tag">5</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"><span class="tag">基础知识</span><span class="tag">12</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/"><span class="tag">大数据</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%8A%80%E6%9C%AF%E5%A4%87%E5%BF%98/"><span class="tag">技术备忘</span><span class="tag">28</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"><span class="tag">机器学习</span><span class="tag">1</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%AE%97%E6%B3%95%E5%A4%87%E5%BF%98/"><span class="tag">算法备忘</span><span class="tag">9</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E8%BF%90%E7%94%A8/"><span class="tag">统计学运用</span><span class="tag">4</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">Subscribe for updates</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div><div class="card widget"><div class="card-content"><div class="notification is-danger">You need to set <code>client_id</code> and <code>slot_id</code> to show this AD unit. Please set it in <code>_config.yml</code>.</div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">follow.it</h3><form action="" method="post" target="_blank"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a><p class="is-size-7"><span>&copy; 2022 John Doe</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><script type="text/x-mathjax-config">MathJax.Hub.Config({
+            'HTML-CSS': {
+                matchFontHeight: false
+            },
+            SVG: {
+                matchFontHeight: false
+            },
+            CommonHTML: {
+                matchFontHeight: false
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$','$'],
+                    ['\\(','\\)']
+                ]
+            }
+        });</script><script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/unpacked/MathJax.js?config=TeX-MML-AM_CHTML" defer></script><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
